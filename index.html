@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>应用控制台</title>
+  <style>
+    /* ===== Reset & Base ===== */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --bg:#f9fafb; --surface:#ffffff; --surface-hover:#f3f4f6;
+      --border:#e5e7eb; --text:#111827; --text-secondary:#6b7280;
+      --text-muted:#9ca3af; --primary:#6b21a8; --primary-light:#a855f7;
+      --primary-bg:rgba(139,92,246,0.06); --accent:#8b5cf6;
+      --card-shadow:0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --card-shadow-hover:0 10px 25px rgba(107,33,168,0.10), 0 4px 10px rgba(0,0,0,0.06);
+      --radius:10px; --radius-lg:16px; --transition:0.2s cubic-bezier(0.4,0,0.2,1);
+    }
+    html { scroll-behavior:smooth; }
+    body {
+      font-family: "Noto Sans SC", Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+      background:var(--bg); color:var(--text); min-height:100vh; line-height:1.5;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    /* ===== Dark Mode ===== */
+    body.dark {
+      --bg:#0f0f17; --surface:#1a1a27; --surface-hover:#22223a;
+      --border:#2d2d44; --text:#f3f4f6; --text-secondary:#9ca3af;
+      --text-muted:#6b7280; --primary:#a78bfa; --primary-light:#c4b5fd;
+      --primary-bg:rgba(139,92,246,0.08);
+      --card-shadow:0 1px 3px rgba(0,0,0,0.3);
+      --card-shadow-hover:0 10px 30px rgba(139,92,246,0.15), 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    /* ===== Layout ===== */
+    .container { max-width:1120px; margin:0 auto; padding:0 32px; }
+    @media(max-width:768px){ .container{padding:0 20px;} }
+
+    /* ===== Header ===== */
+    .header {
+      position:sticky; top:0; z-index:100;
+      background:rgba(249,250,251,0.85); backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border);
+      transition:background var(--transition), border var(--transition);
+    }
+    body.dark .header { background:rgba(15,15,23,0.85); }
+    .header-inner {
+      max-width:1120px; margin:0 auto; padding:0 32px;
+      height:64px; display:flex; align-items:center; gap:20px;
+    }
+    @media(max-width:768px){ .header-inner{padding:0 20px; gap:12px;} }
+
+    .logo {
+      display:flex; align-items:center; gap:10px;
+      font-weight:700; font-size:17px; color:var(--text);
+      letter-spacing:-0.3px; white-space:nowrap;
+    }
+    .logo-mark {
+      width:32px; height:32px; border-radius:8px;
+      background:linear-gradient(135deg,#6b21a8,#a855f7);
+      display:flex; align-items:center; justify-content:center;
+      color:#fff; font-size:15px; font-weight:800; flex-shrink:0;
+    }
+
+    /* Search */
+    .search-box { flex:1; max-width:420px; position:relative; }
+    .search-box input {
+      width:100%; height:40px; border-radius:var(--radius);
+      border:1px solid var(--border); background:var(--surface);
+      padding:0 16px 0 40px; font-size:14px; color:var(--text);
+      outline:none; transition:all var(--transition); font-family:inherit;
+    }
+    .search-box input::placeholder { color:var(--text-muted); }
+    .search-box input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(139,92,246,0.1); }
+    .search-icon {
+      position:absolute; left:13px; top:50%; transform:translateY(-50%);
+      width:16px; height:16px; fill:var(--text-muted); pointer-events:none; transition:fill var(--transition);
+    }
+    .search-box input:focus + .search-icon { fill:var(--accent); }
+
+    .header-actions { margin-left:auto; display:flex; align-items:center; gap:6px; }
+    .btn-icon {
+      width:38px; height:38px; border-radius:var(--radius); border:none;
+      background:transparent; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      font-size:17px; color:var(--text-secondary); transition:all var(--transition);
+    }
+    .btn-icon:hover { background:var(--surface-hover); color:var(--text); }
+
+    /* ===== Page Header ===== */
+    .page-header { padding:48px 0 32px; }
+    .page-title { font-size:36px; font-weight:800; letter-spacing:-1px; line-height:1.1; color:var(--text); }
+    .page-title span { color:var(--accent); }
+    .page-desc { margin-top:8px; font-size:15px; color:var(--text-secondary); }
+
+    /* ===== Filter Tabs ===== */
+    .filter-bar {
+      display:flex; gap:4px; padding-bottom:28px;
+      overflow-x:auto; -webkit-overflow-scrolling:touch;
+    }
+    .filter-bar::-webkit-scrollbar { display:none; }
+    .filter-btn {
+      padding:8px 18px; border-radius:100px; border:1px solid transparent;
+      background:transparent; color:var(--text-secondary);
+      font-size:13px; font-weight:500; cursor:pointer;
+      white-space:nowrap; transition:all var(--transition); font-family:inherit;
+    }
+    .filter-btn:hover { background:var(--surface-hover); color:var(--text); }
+    .filter-btn.active { background:var(--text); color:var(--bg); border-color:var(--text); }
+    body.dark .filter-btn.active { background:#f3f4f6; color:#0f0f17; }
+
+    /* ===== Stats ===== */
+    .stats { font-size:12px; font-weight:500; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; padding-bottom:20px; }
+
+    /* ===== Grid ===== */
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px; padding-bottom:80px; }
+    @media(max-width:640px){ .grid{grid-template-columns:1fr;} }
+
+    /* ===== Card ===== */
+    .card {
+      background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);
+      overflow:hidden; text-decoration:none; color:var(--text);
+      display:flex; flex-direction:column; transition:all var(--transition); position:relative;
+    }
+    .card:hover { transform:translateY(-3px); box-shadow:var(--card-shadow-hover); border-color:transparent; }
+
+    .card-header-gradient { height:4px; }
+    .card-header-wrap { padding:20px 24px 0; display:flex; align-items:flex-start; justify-content:space-between; }
+    .card-icon-wrap {
+      width:48px; height:48px; border-radius:var(--radius);
+      background:var(--primary-bg); display:flex; align-items:center; justify-content:center;
+      font-size:24px; flex-shrink:0;
+    }
+    .card-status {
+      font-size:11px; font-weight:600; padding:4px 10px; border-radius:100px;
+      background:#ecfdf5; color:#059669; text-transform:uppercase; letter-spacing:0.3px;
+    }
+    body.dark .card-status { background:rgba(16,185,129,0.12); color:#34d399; }
+
+    .card-body { padding:16px 24px 20px; flex:1; display:flex; flex-direction:column; gap:8px; }
+    .card-name { font-size:16px; font-weight:700; letter-spacing:-0.2px; }
+    .card-desc { font-size:13px; line-height:1.6; color:var(--text-secondary); }
+
+    .card-meta { display:flex; align-items:center; gap:12px; padding:0 24px 16px; flex-wrap:wrap; }
+    .card-tag {
+      font-size:11px; font-weight:600; padding:3px 10px; border-radius:6px;
+      background:var(--primary-bg); color:var(--accent); letter-spacing:0.2px;
+    }
+
+    .card-footer {
+      padding:14px 24px; border-top:1px solid var(--border);
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .card-url {
+      font-size:12px; color:var(--text-muted);
+      font-family:"SF Mono","Fira Code",monospace;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:70%;
+    }
+    .card-go {
+      font-size:13px; font-weight:600; color:var(--accent);
+      display:flex; align-items:center; gap:4px; transition:gap var(--transition);
+    }
+    .card:hover .card-go { gap:8px; }
+
+    /* ===== Empty ===== */
+    .empty { grid-column:1/-1; text-align:center; padding:80px 20px; }
+    .empty-icon { font-size:48px; margin-bottom:16px; display:block; }
+    .empty-title { font-size:17px; font-weight:600; margin-bottom:6px; }
+    .empty-desc { font-size:14px; color:var(--text-secondary); }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-mark">A</div>
+      应用控制台
+    </div>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="搜索应用名称或描述…" />
+      <svg class="search-icon" viewBox="0 0 24 24">
+        <path d="M21 21l-5.2-5.2C16.2 14.4 14.8 15 13.2 15 9.8 15 7 12.2 7 8.8S9.8 2.6 13.2 2.6s6.2 2.8 6.2 6.2c0 1.6-.6 3-1.8 4l5.2 5.2zM13.2 13.6c2.4 0 4.4-2 4.4-4.4s-2-4.4-4.4-4.4-4.4 2-4.4 4.4 2 4.4 4.4 4.4z"/>
+      </svg>
+    </div>
+    <div class="header-actions">
+      <button class="btn-icon" id="themeBtn" title="切换主题">🌙</button>
+    </div>
+  </div>
+</header>
+
+<!-- Main -->
+<main class="container">
+  <div class="page-header">
+    <h1 class="page-title">我的<span>应用</span></h1>
+    <p class="page-desc">在一个地方管理和访问所有你的网页应用。</p>
+  </div>
+
+  <div class="filter-bar" id="filterBar"></div>
+  <div class="stats" id="statsBar"></div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<script>
+// ============================================================
+// ⚙️  配置区：在这里添加你的应用
+//
+//  accent / accent2 : 卡片顶部渐变色（可自定义）
+//  path            : 相对路径或完整 URL
+// ============================================================
+const APPS = [
+  {
+    name: "待办清单",
+    desc: "简洁的每日任务管理工具，支持分类和截止日期。",
+    icon: "✅",
+    path: "apps/todo/index.html",
+    category: "效率工具",
+    tags: ["任务"],
+    accent: "#6b21a8",
+    accent2: "#a855f7"
+  },
+  {
+    name: "计算器",
+    desc: "支持科学计算和历史记录的高级计算器。",
+    icon: "🧮",
+    path: "apps/calc/index.html",
+    category: "工具",
+    tags: ["数学"],
+    accent: "#059669",
+    accent2: "#34d399"
+  },
+  {
+    name: "图片画廊",
+    desc: "支持灯箱和幻灯片浏览的精美图片画廊。",
+    icon: "🖼️",
+    path: "apps/gallery/index.html",
+    category: "媒体",
+    tags: ["图片"],
+    accent: "#d97706",
+    accent2: "#fbbf24"
+  },
+  {
+    name: "天气预报",
+    desc: "实时天气和未来天气预报，支持雷达图。",
+    icon: "🌤️",
+    path: "apps/weather/index.html",
+    category: "工具",
+    tags: ["天气"],
+    accent: "#0284c7",
+    accent2: "#38bdf8"
+  },
+  // ─── 在下方继续添加更多应用 ───
+  // {
+  //   name: "应用名称",
+  //   desc: "一句话描述。",
+  //   icon: "🚀",
+  //   path: "路径或完整URL",
+  //   category: "分类名称",
+  //   tags: ["标签"],
+  //   accent: "#6b21a8",
+  //   accent2: "#a855f7"
+  // },
+];
+
+// ============================================================
+//  逻辑代码（一般无需修改）
+// ============================================================
+const grid = document.getElementById("grid");
+const searchInput = document.getElementById("searchInput");
+const filterBar = document.getElementById("filterBar");
+const statsBar = document.getElementById("statsBar");
+const themeBtn = document.getElementById("themeBtn");
+
+let activeFilter = "全部";
+
+// ——— 主题 ———
+function initTheme() {
+  const saved = localStorage.getItem("dash-theme");
+  if (saved === "dark" || (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+    document.body.classList.add("dark");
+    themeBtn.textContent = "☀️";
+  }
+}
+function toggleTheme() {
+  const isDark = document.body.classList.toggle("dark");
+  themeBtn.textContent = isDark ? "☀️" : "🌙";
+  localStorage.setItem("dash-theme", isDark ? "dark" : "light");
+}
+themeBtn.addEventListener("click", toggleTheme);
+initTheme();
+
+// ——— 分类 ———
+function getCategories() {
+  const s = new Set();
+  APPS.forEach(a => s.add(a.category));
+  return ["全部", ...Array.from(s).sort()];
+}
+
+// ——— 渲染筛选栏 ———
+function renderFilters() {
+  filterBar.innerHTML = getCategories().map(f =>
+    `<button class="filter-btn${f === activeFilter ? " active" : ""}" data-filter="${f}">${f}</button>`
+  ).join("");
+  filterBar.querySelectorAll(".filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => { activeFilter = btn.dataset.filter; render(); });
+  });
+}
+
+// ——— 渲染卡片 ———
+function render() {
+  const kw = searchInput.value.trim().toLowerCase();
+
+  const filtered = APPS.filter(app => {
+    const matchCat = activeFilter === "全部" || app.category === activeFilter;
+    const matchSearch = !kw ||
+      app.name.toLowerCase().includes(kw) ||
+      app.desc.toLowerCase().includes(kw) ||
+      app.tags.join(" ").toLowerCase().includes(kw) ||
+      app.category.toLowerCase().includes(kw);
+    return matchCat && matchSearch;
+  });
+
+  // 统计
+  const total = APPS.length;
+  const shown = filtered.length;
+  statsBar.textContent = (kw || activeFilter !== "全部")
+    ? `显示 ${shown} / 共 ${total} 个应用`
+    : `共 ${total} 个应用`;
+
+  // 空状态
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty">
+      <span class="empty-icon">📭</span>
+      <div class="empty-title">未找到匹配的应用</div>
+      <div class="empty-desc">试试修改搜索关键词或切换分类</div>
+    </div>`;
+    return;
+  }
+
+  // 卡片
+  grid.innerHTML = filtered.map(app => {
+    // 显示路径（如果是 URL 则只显示域名）
+    let displayUrl = app.path;
+    try {
+      const u = new URL(app.path);
+      displayUrl = u.hostname;
+    } catch(e) {}
+    return `
+    <a class="card" href="${app.path}" target="_blank" rel="noopener">
+      <div class="card-header-gradient" style="background:linear-gradient(90deg,${app.accent||"#6b21a8"},${app.accent2||"#a855f7"})"></div>
+      <div class="card-header-wrap">
+        <div class="card-icon-wrap">${app.icon}</div>
+        <div class="card-status">运行中</div>
+      </div>
+      <div class="card-body">
+        <div class="card-name">${app.name}</div>
+        <div class="card-desc">${app.desc}</div>
+      </div>
+      <div class="card-meta">
+        ${app.tags.map(t => `<span class="card-tag">${t}</span>`).join("")}
+      </div>
+      <div class="card-footer">
+        <span class="card-url">${displayUrl}</span>
+        <span class="card-go">打开 →</span>
+      </div>
+    </a>`;
+  }).join("");
+}
+
+// ——— 搜索（防抖） ———
+let timer;
+searchInput.addEventListener("input", () => {
+  clearTimeout(timer);
+  timer = setTimeout(render, 120);
+});
+
+// ——— 初始化 ———
+renderFilters();
+render();
+</script>
+</body>
+</html>
