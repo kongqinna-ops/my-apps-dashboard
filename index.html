@@ -1,385 +1,369 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>应用控制台</title>
   <style>
-    /* ===== Reset & Base ===== */
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-    :root {
-      --bg:#f9fafb; --surface:#ffffff; --surface-hover:#f3f4f6;
-      --border:#e5e7eb; --text:#111827; --text-secondary:#6b7280;
-      --text-muted:#9ca3af; --primary:#6b21a8; --primary-light:#a855f7;
-      --primary-bg:rgba(139,92,246,0.06); --accent:#8b5cf6;
-      --card-shadow:0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-      --card-shadow-hover:0 10px 25px rgba(107,33,168,0.10), 0 4px 10px rgba(0,0,0,0.06);
-      --radius:10px; --radius-lg:16px; --transition:0.2s cubic-bezier(0.4,0,0.2,1);
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --white:#fff;--bg:#f9fafb;--surface:#fff;
+      --border:#e5e7eb;--border-light:#f0f0f2;
+      --text:#111827;--text-sec:#6b7280;--text-light:#9ca3af;
+      --primary:#4f46e5;--primary-soft:#eef2ff;--primary-hover:#4338ca;
+      --green:#059669;--green-bg:#ecfdf5;--pink-bg:#fdf2f8;--pink:#db2777;
+      --orange-bg:#fff7ed;--orange:#ea580c;--blue-bg:#eff6ff;--blue:#2563eb;
+      --radius:8px;--radius-lg:12px;--radius-xl:16px;
+      --shadow-sm:0 1px 2px rgba(0,0,0,.04);--shadow-md:0 2px 8px rgba(0,0,0,.06);
+      --font:-apple-system,BlinkMacSystemFont,"Noto Sans SC","Segoe UI",Roboto,sans-serif;
     }
-    html { scroll-behavior:smooth; }
-    body {
-      font-family: "Noto Sans SC", Inter, -apple-system, BlinkMacSystemFont, sans-serif;
-      background:var(--bg); color:var(--text); min-height:100vh; line-height:1.5;
-      -webkit-font-smoothing:antialiased;
+    html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.55;-webkit-font-smoothing:antialiased}
+
+    /* ===== Top Nav ===== */
+    .topnav{
+      height:56px;background:var(--white);border-bottom:1px solid var(--border);
+      padding:0 28px;display:flex;align-items:center;gap:20px;
+      position:sticky;top:0;z-index:100;flex-wrap:nowrap;
+    }
+    .tn-logo{
+      font-size:18px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;
+      letter-spacing:-.3px;flex-shrink:0;text-decoration:none;
+    }
+    .tn-logo-mark{
+      width:30px;height:30px;border-radius:8px;
+      background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;
+      display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;border-radius:7px;
+    }
+    .tn-divider{width:1px;height:24px;background:var(--border);flex-shrink:0}
+    .tn-team{
+      display:flex;align-items:center;gap:6px;padding:5px 12px;
+      border-radius:100px;border:1px solid var(--border);
+      background:var(--white);cursor:pointer;font-size:13px;font-weight:600;
+      color:var(--text);transition:border-color .15s;flex-shrink:0;white-space:nowrap;
+    }
+    .tn-team:hover{border-color:var(--primary)}
+    .tn-team-dot{width:10px;height:10px;border-radius:50%;background:var(--pink)}
+    .tn-scope{
+      display:flex;align-items:center;gap:6px;padding:5px 12px;
+      border-radius:100px;border:1px solid var(--border);
+      background:var(--white);cursor:pointer;font-size:13px;
+      color:var(--text);transition:border-color .15s;flex-shrink:0;white-space:nowrap;
+    }
+    .tn-scope:hover{border-color:var(--primary)}
+    .tn-spacer{flex:1;min-width:20px}
+    .tn-right{display:flex;align-items:center;gap:12px;flex-shrink:0}
+    .tn-link{font-size:13px;color:var(--text-sec);text-decoration:none;display:flex;align-items:center;gap:4px;white-space:nowrap}
+    .tn-link:hover{color:var(--primary)}
+    .tn-avatar{
+      width:32px;height:32px;border-radius:50%;background:var(--primary-soft);
+      color:var(--primary);display:flex;align-items:center;justify-content:center;
+      font-size:13px;font-weight:700;cursor:pointer;
     }
 
-    /* ===== Dark Mode ===== */
-    body.dark {
-      --bg:#0f0f17; --surface:#1a1a27; --surface-hover:#22223a;
-      --border:#2d2d44; --text:#f3f4f6; --text-secondary:#9ca3af;
-      --text-muted:#6b7280; --primary:#a78bfa; --primary-light:#c4b5fd;
-      --primary-bg:rgba(139,92,246,0.08);
-      --card-shadow:0 1px 3px rgba(0,0,0,0.3);
-      --card-shadow-hover:0 10px 30px rgba(139,92,246,0.15), 0 4px 12px rgba(0,0,0,0.3);
+    /* ===== Hero ===== */
+    .hero{padding:36px 28px 0;max-width:1200px;margin:0 auto}
+    @media(max-width:720px){.hero{padding:24px 16px 0}}
+    .hero-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+    .hero-left{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    .hero-title{font-size:28px;font-weight:700;letter-spacing:-.5px;line-height:1.2}
+    .badge-free{
+      font-size:11px;font-weight:700;padding:2px 9px;
+      border-radius:100px;background:var(--green-bg);color:var(--green);
+      letter-spacing:.3px;text-transform:uppercase;
     }
 
-    /* ===== Layout ===== */
-    .container { max-width:1120px; margin:0 auto; padding:0 32px; }
-    @media(max-width:768px){ .container{padding:0 20px;} }
+    .hero-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .hero-search{
+      width:260px;height:38px;border-radius:var(--radius-lg);
+      border:1px solid var(--border);padding:0 14px 0 38px;
+      font-size:13.5px;outline:none;transition:all .18s;font-family:inherit;
+      color:var(--text);background:var(--white);
+    }
+    .hero-search::placeholder{color:var(--text-light)}
+    .hero-search:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.08)}
+    .search-icon-abs{
+      position:absolute;left:12px;top:50%;transform:translateY(-50%);
+      width:16px;height:16px;fill:var(--text-light);pointer-events:none;
+    }
+    .btn-outline{
+      height:38px;padding:0 16px;border-radius:var(--radius-lg);
+      border:1px solid var(--border);background:var(--white);
+      color:var(--text);font-size:13px;font-weight:500;
+      cursor:pointer;display:flex;align-items:center;gap:6px;
+      transition:all .18s;font-family:inherit;white-space:nowrap;
+    }
+    .btn-outline:hover{border-color:var(--primary);color:var(--primary)}
 
-    /* ===== Header ===== */
-    .header {
-      position:sticky; top:0; z-index:100;
-      background:rgba(249,250,251,0.85); backdrop-filter:blur(12px);
-      -webkit-backdrop-filter:blur(12px);
-      border-bottom:1px solid var(--border);
-      transition:background var(--transition), border var(--transition);
-    }
-    body.dark .header { background:rgba(15,15,23,0.85); }
-    .header-inner {
-      max-width:1120px; margin:0 auto; padding:0 32px;
-      height:64px; display:flex; align-items:center; gap:20px;
-    }
-    @media(max-width:768px){ .header-inner{padding:0 20px; gap:12px;} }
+    /* ===== Tags Row ===== */
+    .tags-row{padding:20px 28px 0;max-width:1200px;margin:0 auto;display:flex;gap:8px;flex-wrap:wrap}
+    @media(max-width:720px){.tags-row{padding:16px 16px 0}}
 
-    .logo {
-      display:flex; align-items:center; gap:10px;
-      font-weight:700; font-size:17px; color:var(--text);
-      letter-spacing:-0.3px; white-space:nowrap;
+    .chip{
+      height:34px;padding:0 16px;border-radius:100px;
+      border:1px solid var(--border);background:var(--white);
+      color:var(--text-sec);font-size:13px;font-weight:500;
+      cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;
+      gap:6px;font-family:inherit;white-space:nowrap;
     }
-    .logo-mark {
-      width:32px; height:32px; border-radius:8px;
-      background:linear-gradient(135deg,#6b21a8,#a855f7);
-      display:flex; align-items:center; justify-content:center;
-      color:#fff; font-size:15px; font-weight:800; flex-shrink:0;
+    .chip:hover{border-color:var(--text-light);color:var(--text)}
+    .chip.active{
+      background:var(--text);color:var(--white);border-color:var(--text);
     }
-
-    /* Search */
-    .search-box { flex:1; max-width:420px; position:relative; }
-    .search-box input {
-      width:100%; height:40px; border-radius:var(--radius);
-      border:1px solid var(--border); background:var(--surface);
-      padding:0 16px 0 40px; font-size:14px; color:var(--text);
-      outline:none; transition:all var(--transition); font-family:inherit;
-    }
-    .search-box input::placeholder { color:var(--text-muted); }
-    .search-box input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(139,92,246,0.1); }
-    .search-icon {
-      position:absolute; left:13px; top:50%; transform:translateY(-50%);
-      width:16px; height:16px; fill:var(--text-muted); pointer-events:none; transition:fill var(--transition);
-    }
-    .search-box input:focus + .search-icon { fill:var(--accent); }
-
-    .header-actions { margin-left:auto; display:flex; align-items:center; gap:6px; }
-    .btn-icon {
-      width:38px; height:38px; border-radius:var(--radius); border:none;
-      background:transparent; cursor:pointer;
-      display:flex; align-items:center; justify-content:center;
-      font-size:17px; color:var(--text-secondary); transition:all var(--transition);
-    }
-    .btn-icon:hover { background:var(--surface-hover); color:var(--text); }
-
-    /* ===== Page Header ===== */
-    .page-header { padding:48px 0 32px; }
-    .page-title { font-size:36px; font-weight:800; letter-spacing:-1px; line-height:1.1; color:var(--text); }
-    .page-title span { color:var(--accent); }
-    .page-desc { margin-top:8px; font-size:15px; color:var(--text-secondary); }
-
-    /* ===== Filter Tabs ===== */
-    .filter-bar {
-      display:flex; gap:4px; padding-bottom:28px;
-      overflow-x:auto; -webkit-overflow-scrolling:touch;
-    }
-    .filter-bar::-webkit-scrollbar { display:none; }
-    .filter-btn {
-      padding:8px 18px; border-radius:100px; border:1px solid transparent;
-      background:transparent; color:var(--text-secondary);
-      font-size:13px; font-weight:500; cursor:pointer;
-      white-space:nowrap; transition:all var(--transition); font-family:inherit;
-    }
-    .filter-btn:hover { background:var(--surface-hover); color:var(--text); }
-    .filter-btn.active { background:var(--text); color:var(--bg); border-color:var(--text); }
-    body.dark .filter-btn.active { background:#f3f4f6; color:#0f0f17; }
 
     /* ===== Stats ===== */
-    .stats { font-size:12px; font-weight:500; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; padding-bottom:20px; }
+    .stats-line{font-size:12px;color:var(--text-light);letter-spacing:.3px;padding:16px 28px 0;max-width:1200px;margin:0 auto;font-weight:500}
+    @media(max-width:720px){.stats-line{padding:12px 16px 0}}
 
     /* ===== Grid ===== */
-    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px; padding-bottom:80px; }
-    @media(max-width:640px){ .grid{grid-template-columns:1fr;} }
+    .grid{padding:20px 28px 80px;max-width:1200px;margin:0 auto;
+      display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+    @media(max-width:720px){.grid{padding:16px 16px 60px;grid-template-columns:1fr}}
 
-    /* ===== Card ===== */
-    .card {
-      background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);
-      overflow:hidden; text-decoration:none; color:var(--text);
-      display:flex; flex-direction:column; transition:all var(--transition); position:relative;
+    /* ===== Card (Netlify Style) ===== */
+    .card{
+      background:var(--white);border:1px solid var(--border-light);
+      border-radius:var(--radius-xl);overflow:hidden;
+      text-decoration:none;color:var(--text);display:flex;flex-direction:column;
+      transition:all .2s ease;
     }
-    .card:hover { transform:translateY(-3px); box-shadow:var(--card-shadow-hover); border-color:transparent; }
+    .card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:var(--border)}
 
-    .card-header-gradient { height:4px; }
-    .card-header-wrap { padding:20px 24px 0; display:flex; align-items:flex-start; justify-content:space-between; }
-    .card-icon-wrap {
-      width:48px; height:48px; border-radius:var(--radius);
-      background:var(--primary-bg); display:flex; align-items:center; justify-content:center;
-      font-size:24px; flex-shrink:0;
+    .card-inner{padding:24px;display:flex;flex-direction:column;gap:12px;flex:1}
+    .card-head{display:flex;align-items:center;justify-content:space-between}
+    .card-icon{
+      width:44px;height:44px;border-radius:var(--radius-lg);
+      display:flex;align-items:center;justify-content:center;font-size:23px;flex-shrink:0;
     }
-    .card-status {
-      font-size:11px; font-weight:600; padding:4px 10px; border-radius:100px;
-      background:#ecfdf5; color:#059669; text-transform:uppercase; letter-spacing:0.3px;
+    .card-status{
+      font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;
+      letter-spacing:.3px;text-transform:uppercase;
     }
-    body.dark .card-status { background:rgba(16,185,129,0.12); color:#34d399; }
+    .status-live{background:var(--green-bg);color:var(--green)}
+    .status-new{background:var(--pink-bg);color:var(--pink)}
+    .status-draft{background:#f3f4f6;color:var(--text-sec)}
 
-    .card-body { padding:16px 24px 20px; flex:1; display:flex; flex-direction:column; gap:8px; }
-    .card-name { font-size:16px; font-weight:700; letter-spacing:-0.2px; }
-    .card-desc { font-size:13px; line-height:1.6; color:var(--text-secondary); }
+    .card-name{font-size:17px;font-weight:700;letter-spacing:-.2px}
+    .card-desc{font-size:13.5px;color:var(--text-sec);line-height:1.58}
+    .card-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+    .meta-tag{
+      font-size:11.5px;font-weight:600;padding:3px 10px;
+      border-radius:6px;
+    }
+    .mt-green{background:var(--green-bg);color:var(--green)}
+    .mt-blue{background:var(--blue-bg);color:var(--blue)}
+    .mt-orange{background:var(--orange-bg);color:var(--orange)}
 
-    .card-meta { display:flex; align-items:center; gap:12px; padding:0 24px 16px; flex-wrap:wrap; }
-    .card-tag {
-      font-size:11px; font-weight:600; padding:3px 10px; border-radius:6px;
-      background:var(--primary-bg); color:var(--accent); letter-spacing:0.2px;
+    .card-foot{
+      margin-top:auto;padding:14px 24px;border-top:1px solid var(--border-light);
+      display:flex;align-items:center;justify-content:space-between;
     }
+    .card-url{
+      font-size:11.5px;color:var(--text-light);
+      font-family:"SF Mono",Consolas,monospace;
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:65%;
+    }
+    .card-go{
+      font-size:13px;font-weight:600;color:var(--primary);
+      display:flex;align-items:center;gap:3px;transition:gap .2s;
+    }
+    .card:hover .card-go{gap:7px}
 
-    .card-footer {
-      padding:14px 24px; border-top:1px solid var(--border);
-      display:flex; align-items:center; justify-content:space-between;
-    }
-    .card-url {
-      font-size:12px; color:var(--text-muted);
-      font-family:"SF Mono","Fira Code",monospace;
-      overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:70%;
-    }
-    .card-go {
-      font-size:13px; font-weight:600; color:var(--accent);
-      display:flex; align-items:center; gap:4px; transition:gap var(--transition);
-    }
-    .card:hover .card-go { gap:8px; }
+    /* Empty */
+    .empty{grid-column:1/-1;text-align:center;padding:72px 20px}
+    .empty-icon{font-size:52px;margin-bottom:14px;display:block}
+    .empty-t{font-size:17px;font-weight:600;margin-bottom:6px}
+    .empty-d{font-size:14px;color:var(--text-sec)}
 
-    /* ===== Empty ===== */
-    .empty { grid-column:1/-1; text-align:center; padding:80px 20px; }
-    .empty-icon { font-size:48px; margin-bottom:16px; display:block; }
-    .empty-title { font-size:17px; font-weight:600; margin-bottom:6px; }
-    .empty-desc { font-size:14px; color:var(--text-secondary); }
+    /* Mobile nav collapse */
+    @media(max-width:640px){
+      .topnav{padding:0 14px;gap:10px}
+      .tn-team,.tn-scope,.tn-link span{display:none}
+      .hero-search{width:180px}
+      .btn-outline{height:34px;padding:0 12px;font-size:12px}
+    }
   </style>
 </head>
 <body>
 
-<!-- Header -->
-<header class="header">
-  <div class="header-inner">
-    <div class="logo">
-      <div class="logo-mark">A</div>
-      应用控制台
+<!-- Top Nav -->
+<nav class="topnav">
+  <a class="tn-logo"><span class="tn-logo-mark">A</span> 应用控制台</a>
+  <div class="tn-divider"></div>
+  <button class="tn-team"><span class="tn-team-dot"></span> kongq</button>
+  <button class="tn-scope">📱 所有应用</button>
+  <div class="tn-spacer"></div>
+  <div class="tn-right">
+    <a class="tn-link" href="#">❓ 支持</a>
+    <div class="tn-avatar">K</div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-row">
+    <div class="hero-left">
+      <h1 class="hero-title">我的应用</h1>
+      <span class="badge-free">Free</span>
     </div>
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="搜索应用名称或描述…" />
-      <svg class="search-icon" viewBox="0 0 24 24">
-        <path d="M21 21l-5.2-5.2C16.2 14.4 14.8 15 13.2 15 9.8 15 7 12.2 7 8.8S9.8 2.6 13.2 2.6s6.2 2.8 6.2 6.2c0 1.6-.6 3-1.8 4l5.2 5.2zM13.2 13.6c2.4 0 4.4-2 4.4-4.4s-2-4.4-4.4-4.4-4.4 2-4.4 4.4 2 4.4 4.4 4.4z"/>
-      </svg>
-    </div>
-    <div class="header-actions">
-      <button class="btn-icon" id="themeBtn" title="切换主题">🌙</button>
+    <div class="hero-actions">
+      <div style="position:relative">
+        <svg class="search-icon-abs" viewBox="0 0 24 24"><path d="M21 21l-5.2-5.2C16.2 14.4 14.8 15 13.2 15 9.8 15 7 12.2 7 8.8S9.8 2.6 13.2 2.6s6.2 2.8 6.2 6.2c0 1.6-.6 3-1.8 4l5.2 5.2zM13.2 13.6c2.4 0 4.4-2 4.4-4.4s-2-4.4-4.4-4.4-4.4 2-4.4 4.4 2 4.4 4.4 4.4z"/></svg>
+        <input class="hero-search" id="searchInput" placeholder="Search apps…" />
+      </div>
+      <button class="btn-outline" id="themeBtn">🌙</button>
+      <button class="btn-outline">＋ 添加应用</button>
     </div>
   </div>
-</header>
+</section>
 
-<!-- Main -->
-<main class="container">
-  <div class="page-header">
-    <h1 class="page-title">我的<span>应用</span></h1>
-    <p class="page-desc">在一个地方管理和访问所有你的网页应用。</p>
-  </div>
+<!-- Tags -->
+<div class="tags-row" id="tagsRow"></div>
 
-  <div class="filter-bar" id="filterBar"></div>
-  <div class="stats" id="statsBar"></div>
-  <div class="grid" id="grid"></div>
-</main>
+<!-- Stats -->
+<div class="stats-line" id="statsLine"></div>
+
+<!-- Grid -->
+<div class="grid" id="grid"></div>
 
 <script>
 // ============================================================
-// ⚙️  配置区：在这里添加你的应用
+// ⚙️  配置区 — 在这里添加你的应用
 //
-//  accent / accent2 : 卡片顶部渐变色（可自定义）
-//  path            : 相对路径或完整 URL
+//  path   : 相对路径 或 完整 URL（如 https://xxx.netlify.app）
+//  status : 'live' | 'new' | 'draft'
 // ============================================================
 const APPS = [
   {
     name: "待办清单",
-    desc: "简洁的每日任务管理工具，支持分类和截止日期。",
-    icon: "✅",
-    path: "apps/todo/index.html",
-    category: "效率工具",
-    tags: ["任务"],
-    accent: "#6b21a8",
-    accent2: "#a855f7"
+    desc: "简洁的每日任务管理工具，支持分类、标签和截止日期。",
+    icon: "✅", path: "apps/todo/index.html",
+    category: "效率工具", tags: ["任务"], status: "live"
   },
   {
-    name: "计算器",
-    desc: "支持科学计算和历史记录的高级计算器。",
-    icon: "🧮",
-    path: "apps/calc/index.html",
-    category: "工具",
-    tags: ["数学"],
-    accent: "#059669",
-    accent2: "#34d399"
+    name: "计算器 Pro",
+    desc: "支持科学计算和历史记录的高级多功能计算器。",
+    icon: "🧮", path: "apps/calc/index.html",
+    category: "工具", tags: ["数学"], status: "live"
   },
   {
     name: "图片画廊",
-    desc: "支持灯箱和幻灯片浏览的精美图片画廊。",
-    icon: "🖼️",
-    path: "apps/gallery/index.html",
-    category: "媒体",
-    tags: ["图片"],
-    accent: "#d97706",
-    accent2: "#fbbf24"
+    desc: "支持灯箱浏览和幻灯片播放的精美图片展示画廊。",
+    icon: "🖼️", path: "apps/gallery/index.html",
+    category: "媒体", tags: ["图片"], status: "new"
   },
   {
     name: "天气预报",
-    desc: "实时天气和未来天气预报，支持雷达图。",
-    icon: "🌤️",
-    path: "apps/weather/index.html",
-    category: "工具",
-    tags: ["天气"],
-    accent: "#0284c7",
-    accent2: "#38bdf8"
+    desc: "实时天气数据与未来一周预报，支持交互式雷达图。",
+    icon: "🌤️", path: "apps/weather/index.html",
+    category: "工具", tags: ["天气"], status: "live"
   },
-  // ─── 在下方继续添加更多应用 ───
-  // {
-  //   name: "应用名称",
-  //   desc: "一句话描述。",
-  //   icon: "🚀",
-  //   path: "路径或完整URL",
-  //   category: "分类名称",
-  //   tags: ["标签"],
-  //   accent: "#6b21a8",
-  //   accent2: "#a855f7"
-  // },
 ];
 
 // ============================================================
-//  逻辑代码（一般无需修改）
+//  Logic
 // ============================================================
-const grid = document.getElementById("grid");
-const searchInput = document.getElementById("searchInput");
-const filterBar = document.getElementById("filterBar");
-const statsBar = document.getElementById("statsBar");
-const themeBtn = document.getElementById("themeBtn");
+const $ = s => document.getElementById(s);
+const grid = $("grid"), searchInput = $("searchInput"),
+      tagsRow = $("tagsRow"), statsLine = $("statsLine"),
+      themeBtn = $("themeBtn");
 
-let activeFilter = "全部";
+let activeCat = "全部";
 
-// ——— 主题 ———
-function initTheme() {
-  const saved = localStorage.getItem("dash-theme");
-  if (saved === "dark" || (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-    document.body.classList.add("dark");
-    themeBtn.textContent = "☀️";
-  }
+/* Theme */
+function initTheme(){
+  const s=localStorage.getItem("dash-theme"); if(s==="dark") applyDark();
 }
-function toggleTheme() {
-  const isDark = document.body.classList.toggle("dark");
-  themeBtn.textContent = isDark ? "☀️" : "🌙";
-  localStorage.setItem("dash-theme", isDark ? "dark" : "light");
+function applyDark(){
+  document.body.classList.toggle("dark");
+  const d=document.body.classList.contains("dark");
+  document.documentElement.style.setProperty("--bg","#111827");
+  document.documentElement.style.setProperty("--white","#1f2937");
+  document.documentElement.style.setProperty("--surface","#1f2937");
+  document.documentElement.style.setProperty("--border","#374151");
+  document.documentElement.style.setProperty("--border-light","#292524");
+  document.documentElement.style.setProperty("--text","#f9fafb");
+  document.documentElement.style.setProperty("--text-sec","#9ca3af");
+  document.documentElement.style.setProperty("--text-light","#6b7280");
+  document.documentElement.style.setProperty("--primary-soft","rgba(99,102,241,.12)");
+  document.documentElement.style.setProperty("--green-bg","rgba(16,185,129,.12)");
+  document.documentElement.style.setProperty("--pink-bg","rgba(219,39,119,.12)");
+  document.documentElement.style.setProperty("--blue-bg","rgba(37,99,235,.12)");
+  document.documentElement.style.setProperty("--orange-bg","rgba(234,88,12,.12)");
+  document.documentElement.style.setProperty("--shadow-md","0 2px 8px rgba(0,0,0,.25)");
+  themeBtn.textContent=d?"☀️":"🌙";
+  localStorage.setItem("dash-theme",d?"dark":"light");
 }
-themeBtn.addEventListener("click", toggleTheme);
+if(!document.body.classList.contains("dark")){
+  // reset CSS vars for light mode defaults are in :root already
+}
+function toggleTheme(){
+  if(document.body.classList.contains("dark")){
+    location.reload(); // simplest full reset for now
+    localStorage.setItem("dash-theme","light");
+  } else { applyDark(); }
+}
+themeBtn.addEventListener("click",toggleTheme);
 initTheme();
 
-// ——— 分类 ———
-function getCategories() {
-  const s = new Set();
-  APPS.forEach(a => s.add(a.category));
-  return ["全部", ...Array.from(s).sort()];
-}
+/* Categories */
+const tagStyles = ["","mt-green","mt-blue","mt-orange"];
+function getCats(){ const s=new Set(); APPS.forEach(a=>s.add(a.category)); return ["全部",...Array.from(s).sort()]; }
 
-// ——— 渲染筛选栏 ———
-function renderFilters() {
-  filterBar.innerHTML = getCategories().map(f =>
-    `<button class="filter-btn${f === activeFilter ? " active" : ""}" data-filter="${f}">${f}</button>`
+function renderTags(){
+  tagsRow.innerHTML=getCats().map(c =>
+    `<button class="chip${c===activeCat?" active":""}" data-cat="${c}">${c}</button>`
   ).join("");
-  filterBar.querySelectorAll(".filter-btn").forEach(btn => {
-    btn.addEventListener("click", () => { activeFilter = btn.dataset.filter; render(); });
+  tagsRow.querySelectorAll(".chip").forEach(b=>{
+    b.addEventListener("click",()=>{activeCat=b.dataset.cat;render()});
   });
 }
 
-// ——— 渲染卡片 ———
-function render() {
-  const kw = searchInput.value.trim().toLowerCase();
-
-  const filtered = APPS.filter(app => {
-    const matchCat = activeFilter === "全部" || app.category === activeFilter;
-    const matchSearch = !kw ||
-      app.name.toLowerCase().includes(kw) ||
-      app.desc.toLowerCase().includes(kw) ||
-      app.tags.join(" ").toLowerCase().includes(kw) ||
-      app.category.toLowerCase().includes(kw);
-    return matchCat && matchSearch;
+function render(){
+  const kw=searchInput.value.trim().toLowerCase();
+  const filtered=APPS.filter(a=>{
+    if(activeCat!=="全部"&&a.category!==activeCat)return false;
+    if(!kw)return true;
+    return [a.name,a.desc,a.tags.join(" "),a.category].join(" ").toLowerCase().includes(kw);
   });
 
-  // 统计
-  const total = APPS.length;
-  const shown = filtered.length;
-  statsBar.textContent = (kw || activeFilter !== "全部")
-    ? `显示 ${shown} / 共 ${total} 个应用`
-    : `共 ${total} 个应用`;
+  const total=APPS.length,shown=filtered.length;
+  statsLine.textContent=(kw||activeCat!=="全部")
+    ? `Showing ${shown} of ${total} app${total!==1?"s":""}`
+    : `${total} app${total!==1?"s":""}`;
 
-  // 空状态
-  if (filtered.length === 0) {
-    grid.innerHTML = `<div class="empty">
-      <span class="empty-icon">📭</span>
-      <div class="empty-title">未找到匹配的应用</div>
-      <div class="empty-desc">试试修改搜索关键词或切换分类</div>
-    </div>`;
+  if(!filtered.length){
+    grid.innerHTML=`<div class="empty">
+      <span class="empty-icon">📭</span><div class="empty-t">未找到匹配的应用</div>
+      <div class="empty-d">试试修改搜索关键词或切换分类</div></div>`;
     return;
   }
 
-  // 卡片
-  grid.innerHTML = filtered.map(app => {
-    // 显示路径（如果是 URL 则只显示域名）
-    let displayUrl = app.path;
-    try {
-      const u = new URL(app.path);
-      displayUrl = u.hostname;
-    } catch(e) {}
-    return `
-    <a class="card" href="${app.path}" target="_blank" rel="noopener">
-      <div class="card-header-gradient" style="background:linear-gradient(90deg,${app.accent||"#6b21a8"},${app.accent2||"#a855f7"})"></div>
-      <div class="card-header-wrap">
-        <div class="card-icon-wrap">${app.icon}</div>
-        <div class="card-status">运行中</div>
-      </div>
-      <div class="card-body">
+  grid.innerHTML=filtered.map((app,i)=>{
+    let url=app.path;
+    try{ url=new URL(app.path).hostname; }catch(e){}
+    return `<a class="card" href="${app.path}" target="_blank" rel="noopener">
+      <div class="card-inner">
+        <div class="card-head">
+          <div class="card-icon">${app.icon}</div>
+          <span class="card-status status-${app.status||'draft'}">${app.status==='live'?'LIVE':app.status==='new'?'NEW':'DRAFT'}</span>
+        </div>
         <div class="card-name">${app.name}</div>
         <div class="card-desc">${app.desc}</div>
+        <div class="card-meta">
+          ${app.tags.map(t=>`<span class="meta-tag ${tagStyles[(i+1)%tagStyles.length]}">${t}</span>`).join("")}
+        </div>
       </div>
-      <div class="card-meta">
-        ${app.tags.map(t => `<span class="card-tag">${t}</span>`).join("")}
+      <div class="card-foot">
+        <span class="card-url">${url}</span>
+        <span class="card-go">Open ↗</span>
       </div>
-      <div class="card-footer">
-        <span class="card-url">${displayUrl}</span>
-        <span class="card-go">打开 →</span>
-      </div>
-    </a>`;
-  }).join("");
+    </a>`}).join("");
 }
 
-// ——— 搜索（防抖） ———
 let timer;
-searchInput.addEventListener("input", () => {
-  clearTimeout(timer);
-  timer = setTimeout(render, 120);
-});
-
-// ——— 初始化 ———
-renderFilters();
-render();
+searchInput.addEventListener("input",()=>{clearTimeout(timer);timer=setTimeout(render,120)});
+renderTags();render();
 </script>
 </body>
 </html>
