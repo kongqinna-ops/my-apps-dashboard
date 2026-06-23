@@ -382,7 +382,7 @@ const ICON_COLORS = ["#ef4444","#f97316","#f59e0b","#84cc16","#22c55e","#14b8a6"
 function letterIcon(name, color) {
   const c = color || ICON_COLORS[(name||"?").charCodeAt(0) % ICON_COLORS.length];
   const ch = (name || "?").charAt(0).toUpperCase();
-  return `<div style="width:44px;height:44px;border-radius:${var('--radius-lg', '12px')};background:${c};display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:800;flex-shrink:0">${ch}</div>`;
+  return `<div style="width:44px;height:44px;border-radius:12px;background:${c};display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:800;flex-shrink:0">${ch}</div>`;
 }
 
 function getCats(){ const s=new Set(); APPS.forEach(a=>s.add(a.category)); return ["全部",...Array.from(s).sort()]; }
