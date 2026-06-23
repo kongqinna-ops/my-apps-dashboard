@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>管理后台 - 应用控制台</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --white:#fff;--bg:#f9fafb;--surface:#fff;
+  --border:#e5e7eb;--border-light:#f0f0f2;
+  --text:#111827;--text-sec:#6b7280;--text-light:#9ca3af;
+  --primary:#4f46e5;--primary-soft:#eef2ff;--primary-hover:#4338ca;
+  --green:#059669;--green-bg:#ecfdf5;
+  --pink:#db2777;--pink-bg:#fdf2f8;
+  --red:#dc2626;--red-bg:#fef2f2;
+  --orange:#ea580c;--orange-bg:#fff7ed;
+  --blue:#2563eb;--blue-bg:#eff6ff;
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 2px 8px rgba(0,0,0,.06);
+  --shadow-lg:0 8px 24px rgba(0,0,0,.1);
+  --font:-apple-system,BlinkMacSystemFont,"Noto Sans SC","Segoe UI",Roboto,sans-serif;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh}
+
+/* ===== Top Nav ===== */
+.topnav{
+  height:56px;background:var(--white);border-bottom:1px solid var(--border);
+  padding:0 28px;display:flex;align-items:center;gap:20px;
+  position:sticky;top:0;z-index:100;
+}
+.tn-logo{font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px;letter-spacing:-.3px;text-decoration:none;color:var(--text)}
+.tn-logo-mark{
+  width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;
+}
+.tn-spacer{flex:1}
+.tn-link{font-size:13px;color:var(--text-sec);text-decoration:none;display:flex;align-items:center;gap:4px}
+.tn-link:hover{color:var(--primary)}
+
+/* ===== Auth Pages ===== */
+.auth-wrap{min-height:calc(100vh - 56px);display:flex;align-items:center;justify-content:center;padding:40px 20px}
+.auth-card{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--radius-xl);
+  padding:40px;max-width:420px;width:100%;box-shadow:var(--shadow-md);
+}
+.auth-icon{font-size:40px;text-align:center;margin-bottom:16px}
+.auth-title{font-size:22px;font-weight:700;text-align:center;margin-bottom:6px;letter-spacing:-.3px}
+.auth-sub{font-size:14px;color:var(--text-sec);text-align:center;margin-bottom:28px}
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text)}
+.form-input{
+  width:100%;height:42px;border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:0 14px;font-size:14px;outline:none;transition:all .18s;font-family:inherit;
+  background:var(--white);color:var(--text);
+}
+.form-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.08)}
+.form-hint{font-size:12px;color:var(--text-light);margin-top:5px}
+.btn-primary{
+  width:100%;height:44px;border-radius:var(--radius-lg);border:none;
+  background:var(--primary);color:#fff;font-size:14px;font-weight:600;
+  cursor:pointer;transition:background .18s;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-primary:hover{background:var(--primary-hover)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.auth-error{
+  background:var(--red-bg);color:var(--red);font-size:13px;
+  padding:10px 14px;border-radius:var(--radius);margin-bottom:16px;display:none;
+}
+
+/* ===== Admin Dashboard ===== */
+.admin-container{max-width:960px;margin:0 auto;padding:28px}
+@media(max-width:720px){.admin-container{padding:16px}}
+
+.admin-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px}
+.admin-header h1{font-size:24px;font-weight:700;letter-spacing:-.3px}
+.admin-badge{
+  font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;
+  background:var(--green-bg);color:var(--green);letter-spacing:.3px;
+}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;margin-bottom:24px;border-bottom:1px solid var(--border)}
+.tab{
+  padding:10px 18px;font-size:14px;font-weight:600;color:var(--text-sec);
+  cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;
+  transition:all .18s;font-family:inherit;
+}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+
+/* Sections */
+.section{display:none}
+.section.active{display:block}
+
+/* Card */
+.panel{
+  background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius-xl);
+  padding:24px;margin-bottom:18px;
+}
+.panel-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+
+/* App List */
+.app-item{
+  display:flex;align-items:center;gap:14px;padding:14px 0;
+  border-bottom:1px solid var(--border-light);
+}
+.app-item:last-child{border-bottom:none}
+.app-item-icon{font-size:24px;width:40px;height:40px;border-radius:var(--radius);background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.app-item-info{flex:1;min-width:0}
+.app-item-name{font-size:14px;font-weight:600}
+.app-item-meta{font-size:12px;color:var(--text-light);font-family:"SF Mono",Consolas,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.app-item-cat{font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--blue-bg);color:var(--blue);margin-left:8px}
+.btn-delete{
+  height:34px;padding:0 14px;border-radius:var(--radius);border:1px solid var(--border);
+  background:var(--white);color:var(--red);font-size:13px;font-weight:500;
+  cursor:pointer;transition:all .18s;font-family:inherit;flex-shrink:0;
+}
+.btn-delete:hover{background:var(--red-bg);border-color:var(--red)}
+
+/* Add Form */
+.add-form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:600px){.add-form{grid-template-columns:1fr}}
+.add-form .full{grid-column:1/-1}
+
+/* Toggle */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border-light)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-label{font-size:14px;font-weight:600}
+.toggle-desc{font-size:12px;color:var(--text-sec);margin-top:2px}
+.toggle{
+  width:44px;height:24px;border-radius:100px;background:var(--border);
+  position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;border:none;
+}
+.toggle.on{background:var(--green)}
+.toggle::after{
+  content:"";position:absolute;width:18px;height:18px;border-radius:50%;
+  background:#fff;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.toggle.on::after{transform:translateX(20px)}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(120px);
+  background:var(--text);color:#fff;padding:12px 24px;border-radius:var(--radius-lg);
+  font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);
+  transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:9999;pointer-events:none;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.error{background:var(--red)}
+.toast.success{background:var(--green)}
+
+/* Empty */
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-sec)}
+.empty-state-icon{font-size:36px;margin-bottom:8px}
+
+/* Loading */
+.loading-overlay{
+  position:fixed;inset:0;background:rgba(255,255,255,.7);
+  display:none;align-items:center;justify-content:center;z-index:9998;
+}
+.loading-overlay.show{display:flex}
+.spinner{
+  width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--primary);
+  border-radius:50%;animation:spin .6s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Password change */
+.pw-change{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:600px){.pw-change{grid-template-columns:1fr}}
+.btn-save{
+  height:40px;padding:0 20px;border-radius:var(--radius-lg);border:none;
+  background:var(--primary);color:#fff;font-size:13px;font-weight:600;
+  cursor:pointer;transition:background .18s;font-family:inherit;margin-top:8px;
+}
+.btn-save:hover{background:var(--primary-hover)}
+.btn-save:disabled{opacity:.5;cursor:not-allowed}
+
+/* Mobile */
+@media(max-width:640px){
+  .topnav{padding:0 14px}
+  .auth-card{padding:28px 20px}
+}
+</style>
+</head>
+<body>
+
+<!-- Top Nav -->
+<nav class="topnav">
+  <a class="tn-logo" href="index.html"><span class="tn-logo-mark">A</span> 应用控制台</a>
+  <div class="tn-spacer"></div>
+  <a class="tn-link" href="index.html">← 返回仪表盘</a>
+</nav>
+
+<!-- Loading -->
+<div class="loading-overlay" id="loading"><div class="spinner"></div></div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== View 1: GitHub Token Setup ===== -->
+<div id="view-setup" class="auth-wrap" style="display:none">
+  <div class="auth-card">
+    <div class="auth-icon">🔑</div>
+    <div class="auth-title">初始化后台</div>
+    <div class="auth-sub">请输入 GitHub Personal Access Token，用于读写配置文件</div>
+    <div class="auth-error" id="setup-error"></div>
+    <div class="form-group">
+      <label class="form-label">GitHub Token</label>
+      <input class="form-input" type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxx" />
+      <div class="form-hint">
+        生成方式：GitHub → Settings → Developer settings → Personal access tokens → Generate new token（勾选 repo 权限）
+      </div>
+    </div>
+    <button class="btn-primary" id="setupBtn" onclick="completeSetup()">验证并进入</button>
+  </div>
+</div>
+
+<!-- ===== View 2: Admin Login ===== -->
+<div id="view-login" class="auth-wrap" style="display:none">
+  <div class="auth-card">
+    <div class="auth-icon">🔐</div>
+    <div class="auth-title">管理员登录</div>
+    <div class="auth-sub">请输入管理员账号和密码</div>
+    <div class="auth-error" id="login-error"></div>
+    <div class="form-group">
+      <label class="form-label">用户名</label>
+      <input class="form-input" type="text" id="loginUser" placeholder="admin" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">密码</label>
+      <input class="form-input" type="password" id="loginPass" placeholder="••••••••" />
+    </div>
+    <button class="btn-primary" id="loginBtn" onclick="doLogin()">登录</button>
+  </div>
+</div>
+
+<!-- ===== View 3: Admin Dashboard ===== -->
+<div id="view-admin" style="display:none">
+  <div class="admin-container">
+    <div class="admin-header">
+      <h1>管理后台</h1>
+      <span class="admin-badge">已连接</span>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('apps')">应用管理</button>
+      <button class="tab" onclick="switchTab('settings')">系统设置</button>
+    </div>
+
+    <!-- App Management -->
+    <div class="section active" id="sec-apps">
+      <!-- Add App -->
+      <div class="panel">
+        <div class="panel-title">➕ 添加新应用</div>
+        <div class="add-form">
+          <div>
+            <label class="form-label">应用名称</label>
+            <input class="form-input" id="appName" placeholder="我的应用" />
+          </div>
+          <div>
+            <label class="form-label">应用链接</label>
+            <input class="form-input" id="appPath" placeholder="https://xxx.netlify.app" />
+          </div>
+          <div>
+            <label class="form-label">分类</label>
+            <input class="form-input" id="appCategory" placeholder="工具" />
+          </div>
+          <div>
+            <label class="form-label">图标（Emoji）</label>
+            <input class="form-input" id="appIcon" placeholder="🚀" />
+          </div>
+          <div class="full">
+            <label class="form-label">描述</label>
+            <input class="form-input" id="appDesc" placeholder="一句话描述这个应用" />
+          </div>
+          <div class="full">
+            <label class="form-label">标签（逗号分隔）</label>
+            <input class="form-input" id="appTags" placeholder="标签1, 标签2" />
+          </div>
+          <div class="full">
+            <button class="btn-primary" id="addAppBtn" onclick="addApp()" style="width:auto;padding:0 24px">添加应用</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- App List -->
+      <div class="panel">
+        <div class="panel-title">📋 已有应用（<span id="appCount">0</span>）</div>
+        <div id="appList"></div>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div class="section" id="sec-settings">
+      <!-- Access Control -->
+      <div class="panel">
+        <div class="panel-title">🔒 仪表盘访问控制</div>
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">公开访问</div>
+            <div class="toggle-desc">开启后任何人都可以直接查看仪表盘，关闭后需要输入密码</div>
+          </div>
+          <button class="toggle" id="publicToggle" onclick="togglePublic()"></button>
+        </div>
+        <div class="toggle-row" id="passwordRow">
+          <div style="flex:1">
+            <div class="toggle-label">仪表盘访问密码</div>
+            <div class="toggle-desc">访客需要输入此密码才能查看仪表盘</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input class="form-input" id="dashPassword" type="password" placeholder="设置新密码" style="width:180px;height:36px" />
+            <button class="btn-save" style="margin-top:0" onclick="setDashPassword()">保存</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Password -->
+      <div class="panel">
+        <div class="panel-title">👤 管理员密码修改</div>
+        <div class="pw-change">
+          <div>
+            <label class="form-label">新密码</label>
+            <input class="form-input" id="newAdminPass" type="password" placeholder="输入新密码" />
+          </div>
+          <div>
+            <label class="form-label">确认密码</label>
+            <input class="form-input" id="confirmAdminPass" type="password" placeholder="再次输入新密码" />
+          </div>
+        </div>
+        <button class="btn-save" onclick="changeAdminPassword()">修改管理员密码</button>
+      </div>
+
+      <!-- Token Management -->
+      <div class="panel">
+        <div class="panel-title">⚙️ GitHub Token</div>
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">当前 Token</div>
+            <div class="toggle-desc" id="tokenDisplay">已设置</div>
+          </div>
+          <button class="btn-delete" style="color:var(--text-sec)" onclick="resetToken()">重置 Token</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  Config
+// ============================================================
+const REPO_OWNER = "kongqinna-ops";
+const REPO_NAME = "my-apps-dashboard";
+const CONFIG_PATH = "config.json";
+const API_BASE = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${CONFIG_PATH}`;
+
+// ============================================================
+//  State
+// ============================================================
+let githubToken = localStorage.getItem("gh_token") || "";
+let configData = null;
+let configSha = null;
+let adminLoggedIn = sessionStorage.getItem("admin_authed") === "1";
+
+// ============================================================
+//  Utils
+// ============================================================
+async function sha256(text) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+function showToast(msg, type = "") {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "toast show " + type;
+  setTimeout(() => t.className = "toast " + type, 2500);
+}
+
+function showLoading(show) {
+  document.getElementById("loading").classList.toggle("show", show);
+}
+
+function showView(id) {
+  ["view-setup", "view-login", "view-admin"].forEach(v => {
+    document.getElementById(v).style.display = v === id ? "block" : "none";
+  });
+}
+
+// ============================================================
+//  GitHub API
+// ============================================================
+async function fetchConfig() {
+  const res = await fetch(API_BASE, {
+    headers: {
+      "Authorization": `token ${githubToken}`,
+      "Accept": "application/vnd.github.v3+json"
+    }
+  });
+  if (!res.ok) throw new Error(`GitHub API 错误: ${res.status}`);
+  const data = await res.json();
+  configSha = data.sha;
+  const content = atob(data.content.replace(/\n/g, ""));
+  configData = JSON.parse(content);
+  return configData;
+}
+
+async function saveConfig(message = "更新配置") {
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(configData, null, 2))));
+  const res = await fetch(API_BASE, {
+    method: "PUT",
+    headers: {
+      "Authorization": `token ${githubToken}`,
+      "Accept": "application/vnd.github.v3+json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message: message,
+      content: content,
+      sha: configSha
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.message || `保存失败: ${res.status}`);
+  }
+  const data = await res.json();
+  configSha = data.content.sha;
+}
+
+// ============================================================
+//  Init
+// ============================================================
+async function init() {
+  if (!githubToken) {
+    showView("view-setup");
+    return;
+  }
+  if (!adminLoggedIn) {
+    showView("view-login");
+    return;
+  }
+  await enterAdmin();
+}
+
+async function enterAdmin() {
+  showLoading(true);
+  try {
+    await fetchConfig();
+    renderAdmin();
+    showView("view-admin");
+  } catch (e) {
+    showToast("加载配置失败: " + e.message, "error");
+    // Token might be invalid
+    if (e.message.includes("401") || e.message.includes("403")) {
+      localStorage.removeItem("gh_token");
+      githubToken = "";
+      showView("view-setup");
+    }
+  } finally {
+    showLoading(false);
+  }
+}
+
+// ============================================================
+//  Setup
+// ============================================================
+async function completeSetup() {
+  const token = document.getElementById("tokenInput").value.trim();
+  if (!token) {
+    document.getElementById("setup-error").textContent = "请输入 Token";
+    document.getElementById("setup-error").style.display = "block";
+    return;
+  }
+
+  const btn = document.getElementById("setupBtn");
+  btn.disabled = true;
+  btn.textContent = "验证中...";
+  document.getElementById("setup-error").style.display = "none";
+
+  try {
+    // Test token by trying to fetch config
+    githubToken = token;
+    await fetchConfig();
+    localStorage.setItem("gh_token", token);
+    showToast("Token 验证成功", "success");
+    // Go to login
+    adminLoggedIn = false;
+    sessionStorage.removeItem("admin_authed");
+    showView("view-login");
+  } catch (e) {
+    document.getElementById("setup-error").textContent = "验证失败: " + e.message;
+    document.getElementById("setup-error").style.display = "block";
+    githubToken = "";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "验证并进入";
+  }
+}
+
+// ============================================================
+//  Login
+// ============================================================
+async function doLogin() {
+  const user = document.getElementById("loginUser").value.trim();
+  const pass = document.getElementById("loginPass").value;
+
+  if (!user || !pass) {
+    document.getElementById("login-error").textContent = "请填写用户名和密码";
+    document.getElementById("login-error").style.display = "block";
+    return;
+  }
+
+  const btn = document.getElementById("loginBtn");
+  btn.disabled = true;
+  btn.textContent = "登录中...";
+  document.getElementById("login-error").style.display = "none";
+
+  try {
+    // Fetch config if not loaded
+    if (!configData) await fetchConfig();
+
+    const passHash = await sha256(pass);
+    if (user === configData.admin.username && passHash === configData.admin.passwordHash) {
+      adminLoggedIn = true;
+      sessionStorage.setItem("admin_authed", "1");
+      renderAdmin();
+      showView("view-admin");
+    } else {
+      document.getElementById("login-error").textContent = "用户名或密码错误";
+      document.getElementById("login-error").style.display = "block";
+    }
+  } catch (e) {
+    document.getElementById("login-error").textContent = "加载失败: " + e.message;
+    document.getElementById("login-error").style.display = "block";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "登录";
+  }
+}
+
+// Enter key support
+document.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    if (document.getElementById("view-setup").style.display !== "none") completeSetup();
+    else if (document.getElementById("view-login").style.display !== "none") doLogin();
+  }
+});
+
+// ============================================================
+//  Tabs
+// ============================================================
+function switchTab(tab) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  if (tab === "apps") {
+    document.querySelectorAll(".tab")[0].classList.add("active");
+    document.getElementById("sec-apps").classList.add("active");
+  } else {
+    document.querySelectorAll(".tab")[1].classList.add("active");
+    document.getElementById("sec-settings").classList.add("active");
+  }
+}
+
+// ============================================================
+//  Render Admin
+// ============================================================
+function renderAdmin() {
+  renderAppList();
+  renderSettings();
+}
+
+function renderAppList() {
+  const list = document.getElementById("appList");
+  const apps = configData.apps || [];
+  document.getElementById("appCount").textContent = apps.length;
+
+  if (!apps.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📭</div>暂无应用</div>`;
+    return;
+  }
+
+  list.innerHTML = apps.map((app, i) => `
+    <div class="app-item">
+      <div class="app-item-icon">${app.icon || "📦"}</div>
+      <div class="app-item-info">
+        <div class="app-item-name">
+          ${app.name}
+          <span class="app-item-cat">${app.category || "未分类"}</span>
+        </div>
+        <div class="app-item-meta">${app.path}</div>
+      </div>
+      <button class="btn-delete" onclick="deleteApp(${i})">删除</button>
+    </div>
+  `).join("");
+}
+
+function renderSettings() {
+  const toggle = document.getElementById("publicToggle");
+  const isPublic = configData.settings.publicMode;
+  toggle.classList.toggle("on", isPublic);
+
+  const passwordRow = document.getElementById("passwordRow");
+  passwordRow.style.display = isPublic ? "none" : "flex";
+
+  const tokenDisplay = document.getElementById("tokenDisplay");
+  tokenDisplay.textContent = "已设置（" + githubToken.substring(0, 7) + "...）";
+}
+
+// ============================================================
+//  App Management
+// ============================================================
+async function addApp() {
+  const name = document.getElementById("appName").value.trim();
+  const path = document.getElementById("appPath").value.trim();
+  const category = document.getElementById("appCategory").value.trim() || "未分类";
+  const icon = document.getElementById("appIcon").value.trim() || "📦";
+  const desc = document.getElementById("appDesc").value.trim() || "";
+  const tagsStr = document.getElementById("appTags").value.trim();
+  const tags = tagsStr ? tagsStr.split(",").map(t => t.trim()).filter(Boolean) : [];
+
+  if (!name || !path) {
+    showToast("请填写应用名称和链接", "error");
+    return;
+  }
+
+  const btn = document.getElementById("addAppBtn");
+  btn.disabled = true;
+  btn.textContent = "添加中...";
+  showLoading(true);
+
+  try {
+    // Re-fetch to get latest sha
+    await fetchConfig();
+
+    configData.apps.push({
+      name, desc, icon, path, category, tags, status: "live"
+    });
+
+    await saveConfig("添加应用: " + name);
+    showToast("应用添加成功", "success");
+
+    // Clear form
+    ["appName", "appPath", "appCategory", "appIcon", "appDesc", "appTags"].forEach(id => {
+      document.getElementById(id).value = "";
+    });
+
+    renderAppList();
+  } catch (e) {
+    showToast("添加失败: " + e.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "添加应用";
+    showLoading(false);
+  }
+}
+
+async function deleteApp(index) {
+  const app = configData.apps[index];
+  if (!confirm(`确认删除「${app.name}」？\n\n这只会在仪表盘上移除该应用链接，不影响 Netlify 上部署的应用本身。`)) return;
+
+  showLoading(true);
+  try {
+    // Re-fetch to get latest sha
+    await fetchConfig();
+
+    configData.apps.splice(index, 1);
+    await saveConfig("删除应用: " + app.name);
+    showToast("应用已删除", "success");
+    renderAppList();
+  } catch (e) {
+    showToast("删除失败: " + e.message, "error");
+  } finally {
+    showLoading(false);
+  }
+}
+
+// ============================================================
+//  Settings Management
+// ============================================================
+async function togglePublic() {
+  showLoading(true);
+  try {
+    await fetchConfig();
+    configData.settings.publicMode = !configData.settings.publicMode;
+    await saveConfig(configData.settings.publicMode ? "切换为公开模式" : "切换为密码保护模式");
+    showToast(configData.settings.publicMode ? "已切换为公开访问" : "已开启密码保护", "success");
+    renderSettings();
+  } catch (e) {
+    showToast("操作失败: " + e.message, "error");
+  } finally {
+    showLoading(false);
+  }
+}
+
+async function setDashPassword() {
+  const pw = document.getElementById("dashPassword").value;
+  if (!pw) {
+    showToast("请输入密码", "error");
+    return;
+  }
+  if (pw.length < 4) {
+    showToast("密码至少 4 位", "error");
+    return;
+  }
+
+  showLoading(true);
+  try {
+    await fetchConfig();
+    configData.settings.passwordHash = await sha256(pw);
+    if (configData.settings.publicMode) {
+      configData.settings.publicMode = false;
+    }
+    await saveConfig("设置仪表盘访问密码");
+    showToast("密码已设置", "success");
+    document.getElementById("dashPassword").value = "";
+    renderSettings();
+  } catch (e) {
+    showToast("设置失败: " + e.message, "error");
+  } finally {
+    showLoading(false);
+  }
+}
+
+async function changeAdminPassword() {
+  const newPass = document.getElementById("newAdminPass").value;
+  const confirmPass = document.getElementById("confirmAdminPass").value;
+
+  if (!newPass) {
+    showToast("请输入新密码", "error");
+    return;
+  }
+  if (newPass !== confirmPass) {
+    showToast("两次密码不一致", "error");
+    return;
+  }
+  if (newPass.length < 6) {
+    showToast("密码至少 6 位", "error");
+    return;
+  }
+
+  showLoading(true);
+  try {
+    await fetchConfig();
+    configData.admin.passwordHash = await sha256(newPass);
+    await saveConfig("修改管理员密码");
+    showToast("管理员密码已修改", "success");
+    document.getElementById("newAdminPass").value = "";
+    document.getElementById("confirmAdminPass").value = "";
+  } catch (e) {
+    showToast("修改失败: " + e.message, "error");
+  } finally {
+    showLoading(false);
+  }
+}
+
+function resetToken() {
+  if (!confirm("确认重置 GitHub Token？需要重新输入。")) return;
+  localStorage.removeItem("gh_token");
+  sessionStorage.removeItem("admin_authed");
+  githubToken = "";
+  adminLoggedIn = false;
+  configData = null;
+  showView("view-setup");
+  document.getElementById("tokenInput").value = "";
+}
+
+// ============================================================
+//  Start
+// ============================================================
+init();
+</script>
+</body>
+</html>

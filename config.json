@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "settings": {
+    "publicMode": true,
+    "passwordHash": ""
+  },
+  "admin": {
+    "username": "admin",
+    "passwordHash": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9"
+  },
+  "apps": [
+    {
+      "name": "青海甘肃旅行攻略",
+      "desc": "大西北环线旅行攻略，涵盖行程规划、景点推荐、美食住宿等实用信息。",
+      "icon": "🏔️",
+      "path": "https://thunderous-dodol-05fb2f.netlify.app/",
+      "category": "旅行",
+      "tags": ["青海", "甘肃", "攻略"],
+      "status": "live"
+    },
+    {
+      "name": "Markdown 排版编辑器",
+      "desc": "支持实时预览的 Markdown 编辑器，适合撰写文档和排版内容。",
+      "icon": "📝",
+      "path": "https://imaginative-tartufo-d12aa2.netlify.app/",
+      "category": "工具",
+      "tags": ["Markdown", "编辑器"],
+      "status": "live"
+    },
+    {
+      "name": "One Step 待办任务管理",
+      "desc": "简洁高效的任务管理工具，帮你一步一步完成每天的目标。",
+      "icon": "📋",
+      "path": "https://profound-figolla-a17913.netlify.app/",
+      "category": "效率工具",
+      "tags": ["任务", "待办"],
+      "status": "live"
+    }
+  ]
+}
