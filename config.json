@@ -1,50 +1,1 @@
-{
-  "version": 1,
-  "settings": {
-    "publicMode": true,
-    "passwordHash": ""
-  },
-  "admin": {
-    "username": "admin",
-    "passwordHash": "a58c4ead7458d77c8ab4331b8efc24da37164c4e12f40de9158e228bb7001986"
-  },
-  "apps": [
-    {
-      "name": "éæµ·çèæè¡æ»ç¥",
-      "desc": "å¤§è¥¿åç¯çº¿æè¡æ»ç¥ï¼æ¶µçè¡ç¨è§åãæ¯ç¹æ¨èãç¾é£ä½å®¿ç­å®ç¨ä¿¡æ¯ã",
-      "icon": "ðï¸",
-      "path": "https://thunderous-dodol-05fb2f.netlify.app/",
-      "category": "æè¡",
-      "tags": [
-        "éæµ·",
-        "çè",
-        "æ»ç¥"
-      ],
-      "status": "live"
-    },
-    {
-      "name": "Markdown æçç¼è¾å¨",
-      "desc": "æ¯æå®æ¶é¢è§ç Markdown ç¼è¾å¨ï¼éåæ°åææ¡£åæçåå®¹ã",
-      "icon": "ð",
-      "path": "https://imaginative-tartufo-d12aa2.netlify.app/",
-      "category": "å·¥å·",
-      "tags": [
-        "Markdown",
-        "ç¼è¾å¨"
-      ],
-      "status": "live"
-    },
-    {
-      "name": "One Step å¾åä»»å¡ç®¡ç",
-      "desc": "ç®æ´é«æçä»»å¡ç®¡çå·¥å·ï¼å¸®ä½ ä¸æ­¥ä¸æ­¥å®ææ¯å¤©çç®æ ã",
-      "icon": "ð",
-      "path": "https://profound-figolla-a17913.netlify.app/",
-      "category": "æçå·¥å·",
-      "tags": [
-        "ä»»å¡",
-        "å¾å"
-      ],
-      "status": "live"
-    }
-  ]
-}
+{"version": 2, "settings": {"publicMode": true, "passwordHash": ""}, "admin": {"username": "admin", "passwordHash": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9"}, "apps": [{"name": "青海甘肃旅行攻略", "desc": "大西北环线旅行攻略，涵盖行程规划、景点推荐、美食住宿等实用信息。", "color": "#d97706", "path": "https://thunderous-dodol-05fb2f.netlify.app/", "category": "旅行", "tags": ["青海", "甘肃", "攻略"], "status": "live", "appPasswordHash": ""}, {"name": "Markdown 排版编辑器", "desc": "支持实时预览的 Markdown 编辑器，适合撰写文档和排版内容。", "color": "#2563eb", "path": "https://imaginative-tartufo-d12aa2.netlify.app/", "category": "工具", "tags": ["Markdown", "编辑器"], "status": "live", "appPasswordHash": ""}, {"name": "One Step 待办任务管理", "desc": "简洁高效的任务管理工具，帮你一步一步完成每天的目标。", "color": "#059669", "path": "https://profound-figolla-a17913.netlify.app/", "category": "效率工具", "tags": ["任务", "待办"], "status": "live", "appPasswordHash": ""}]}

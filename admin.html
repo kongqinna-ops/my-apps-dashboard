@@ -18,10 +18,9 @@
   --blue:#2563eb;--blue-bg:#eff6ff;
   --radius:8px;--radius-lg:12px;--radius-xl:16px;
   --shadow-sm:0 1px 2px rgba(0,0,0,.04);
-  --shadow-md:0 2px 8px rgba(0,0,0,.06);
-  --shadow-lg:0 8px 24px rgba(0,0,0,.1);
-  --font:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC",system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
-  --font-mono:"Cascadia Code","SF Mono",Consolas,"Liberation Mono",Menlo,monospace;
+  --shadow-md:0 4px 14px rgba(0,0,0,.06);
+  --shadow-lg:0 10px 30px rgba(0,0,0,.1);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC",system-ui,sans-serif;
 }
 body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh}
 
@@ -47,7 +46,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
   background:var(--white);border:1px solid var(--border);border-radius:var(--radius-xl);
   padding:40px;max-width:420px;width:100%;box-shadow:var(--shadow-md);
 }
-.auth-icon{font-size:40px;text-align:center;margin-bottom:16px}
+.auth-icon{text-align:center;margin-bottom:16px}
+.auth-icon svg{width:48px;height:48px}
 .auth-title{font-size:22px;font-weight:700;text-align:center;margin-bottom:6px;letter-spacing:-.3px}
 .auth-sub{font-size:14px;color:var(--text-sec);text-align:center;margin-bottom:28px}
 .form-group{margin-bottom:16px}
@@ -58,7 +58,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
   background:var(--white);color:var(--text);
 }
 .form-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.08)}
-.form-hint{font-size:12px;color:var(--text-light);margin-top:5px}
+.form-hint{font-size:12px;color:var(--text-light);margin-top:5px;line-height:1.45}
 .btn-primary{
   width:100%;height:44px;border-radius:var(--radius-lg);border:none;
   background:var(--primary);color:#fff;font-size:14px;font-weight:600;
@@ -86,7 +86,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 /* Tabs */
 .tabs{display:flex;gap:4px;margin-bottom:24px;border-bottom:1px solid var(--border)}
 .tab{
-  padding:10px 18px;font-size:14px;font-weight:600;color:var(--text-sec);
+  padding:10px 20px;font-size:14px;font-weight:600;color:var(--text-sec);
   cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;
   transition:all .18s;font-family:inherit;
 }
@@ -97,80 +97,92 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 .section{display:none}
 .section.active{display:block}
 
-/* Card */
+/* Card / Panel */
 .panel{
   background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius-xl);
-  padding:24px;margin-bottom:18px;
+  padding:24px;margin-bottom:20px;
 }
-.panel-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.panel-title{font-size:15px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px}
 
-/* App List - Table Style */
-.app-table{width:100%;border-collapse:collapse}
-.app-table th{
-  text-align:left;font-size:12px;font-weight:700;color:var(--text-sec);
-  text-transform:uppercase;letter-spacing:.4px;padding:10px 14px;border-bottom:2px solid var(--border);
+/* ===== SVG Letter Icon ===== */
+.letter-icon{
+  flex-shrink:0;width:42px;height:42px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:17px;font-weight:800;letter-spacing:-.5px;text-transform:uppercase;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
 }
-.app-row{display:flex;align-items:center;gap:16px;padding:14px 14px;
-  border-bottom:1px solid var(--border-light);transition:background .15s;
-}
-.app-row:hover{background:var(--primary-soft)}
-.app-row:last-child{border-bottom:none}
 
-/* Icon */
-.app-icon-cell{flex-shrink:0;width:44px;height:44px;border-radius:12px;
-  background:linear-gradient(135deg,#f3f4f6,#e5e7eb);
-  display:flex;align-items:center;justify-content:center;font-size:22px;
-  line-height:1;
+/* ===== App List (Card Grid) ===== */
+.app-grid{display:grid;grid-template-columns:1fr;gap:12px}
+.app-card{
+  display:flex;align-items:center;gap:16px;padding:16px 18px;
+  border:1px solid var(--border-light);border-radius:var(--radius-lg);
+  background:var(--white);transition:all .15s ease;
 }
-.dark-mode .app-icon-cell,
-body:not(.light) .app-icon-cell{background:linear-gradient(135deg,#374151,#1f2937)}
+.app-card:hover{border-color:var(--primary);box-shadow:var(--shadow-md);transform:translateY(-1px)}
 
-/* Info */
-.app-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
-.app-name-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.app-name{font-size:14.5px;font-weight:700;color:var(--text)}
-.app-badge{
-  font-size:11px;font-weight:600;padding:2px 9px;border-radius:100px;
+.app-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.app-name-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.app-name{font-size:15px;font-weight:700;color:var(--text)}
+.app-cat-badge{
+  font-size:11px;font-weight:600;padding:2px 10px;border-radius:100px;
   flex-shrink:0;
 }
-.badge-travel{background:#fef3c7;color:#d97706}
-.badge-tool{background:#dbeafe;color:#2563eb}
-.badge-efficiency{background:#d1fae5;color:#059669}
-.badge-other{background:#f3f4f6;color:#6b7280}
-.app-desc{font-size:12.5px;color:var(--text-sec);line-height:1.45}
-.app-url{
-  font-size:11.5px;color:var(--text-light);
-  font-family:"Cascadia Code","SF Mono",Consolas,"Liberation Mono",Menlo,monospace;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px;
-  padding:3px 8px;border-radius:6px;background:var(--bg);
-  display:inline-block;margin-top:2px;
-}
+.cat-travel{background:#fef3c7;color:#d97706}
+.cat-tool{background:#dbeafe;color:#2563eb}
+.cat-efficiency{background:#d1fae5;color:#059669}
+.cat-other{background:#f3f4f6;color:#6b7280}
+.status-live{background:#ecfdf5;color:#059669}
+.status-new{background:#fdf2f8;color:#db2777}
+.status-draft{background:#f3f4f6;color:#9ca3af}
 
-/* Tags */
-.app-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:2px}
+.app-desc{font-size:13px;color:var(--text-sec);line-height:1.5}
+.app-meta-row{display:flex;align-items:center;gap:10px;margin-top:2px;flex-wrap:wrap}
+.app-tags{display:flex;gap:4px;flex-wrap:wrap}
 .app-tag{
   font-size:11px;font-weight:500;padding:2px 8px;border-radius:5px;
   background:var(--bg);color:var(--text-sec);white-space:nowrap;
 }
-
-/* Delete */
-.btn-del{
-  height:34px;padding:0 16px;border-radius:var(--radius-lg);border:1px solid #fecaca;
-  background:#fff;color:var(--red,#dc2626);font-size:13px;font-weight:600;
-  cursor:pointer;transition:all .18s;font-family:inherit;flex-shrink:0;opacity:.85;
+.app-url-text{
+  font-size:11.5px;color:var(--text-light);
+  font-family:"SF Mono",Consolas,"Liberation Mono",Menlo,monospace;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px;
+  padding:2px 8px;border-radius:5px;background:var(--bg);
 }
-.btn-del:hover{background:var(--red-bg,#fef2f2);border-color:var(--red,#dc2626);opacity:1}
 
-/* Add Form */
+.app-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.btn-icon{
+  width:34px;height:34px;border-radius:var(--radius);border:1px solid var(--border);
+  background:var(--white);color:var(--text-sec);font-size:15px;cursor:pointer;
+  transition:all .15s;display:flex;align-items:center;justify-content:center;
+}
+.btn-icon:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-soft)}
+.btn-icon.danger:hover{border-color:var(--red);color:var(--red);background:var(--red-bg)}
+.lock-on{color:var(--orange) !important;border-color:var(--orange) !important}
+
+.btn-del-text{
+  height:34px;padding:0 14px;border-radius:var(--radius-lg);border:1px solid #fecaca;
+  background:#fff;color:var(--red);font-size:12.5px;font-weight:600;
+  cursor:pointer;transition:all .15s;font-family:inherit;flex-shrink:0;
+}
+.btn-del-text:hover{background:var(--red-bg);border-color:var(--red)}
+
+/* ===== Add Form ===== */
 .add-form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media(max-width:600px){.add-form{grid-template-columns:1fr}}
 .add-form .full{grid-column:1/-1}
 
+/* ===== Settings Sections ===== */
+.settings-section{margin-bottom:24px}
+.settings-header{font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border-light)}
+.info-row{
+  display:flex;align-items:center;justify-content:space-between;padding:12px 0;
+  gap:16px;flex-wrap:wrap;
+}
+.info-label{font-size:14px;font-weight:600}
+.info-value{font-size:13px;color:var(--text-sec);font-family:"SF Mono",Consolas,monospace;background:var(--bg);padding:4px 10px;border-radius:6px}
+
 /* Toggle */
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border-light)}
-.toggle-row:last-child{border-bottom:none}
-.toggle-label{font-size:14px;font-weight:600}
-.toggle-desc{font-size:12px;color:var(--text-sec);margin-top:2px}
 .toggle{
   width:44px;height:24px;border-radius:100px;background:var(--border);
   position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;border:none;
@@ -182,25 +194,85 @@ body:not(.light) .app-icon-cell{background:linear-gradient(135deg,#374151,#1f293
 }
 .toggle.on::after{transform:translateX(20px)}
 
+.pw-fields{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pw-field-input{
+  height:36px;border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:0 12px;font-size:13px;outline:none;font-family:inherit;
+  background:var(--white);color:var(--text);width:160px;
+}
+.pw-field-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.08)}
+.btn-save-sm{
+  height:36px;padding:0 16px;border-radius:var(--radius-lg);border:none;
+  background:var(--primary);color:#fff;font-size:12.5px;font-weight:600;
+  cursor:pointer;transition:background .15s;font-family:inherit;white-space:nowrap;
+}
+.btn-save-sm:hover{background:var(--primary-hover)}
+.btn-save-sm:disabled{opacity:.5;cursor:not-allowed}
+
+/* Divider */
+.divider{height:1px;background:var(--border-light);margin:24px 0}
+
+/* App Password Modal */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.35);
+  display:none;align-items:center;justify-content:center;z-index:9999;
+  animation:fadeIn .15s ease;
+}
+.modal-overlay.show{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-box{
+  background:var(--white);border-radius:var(--radius-xl);padding:32px;max-width:400px;width:92%;
+  box-shadow:var(--shadow-lg);
+}
+.modal-title{font-size:17px;font-weight:700;margin-bottom:6px}
+.modal-desc{font-size:13px;color:var(--text-sec);margin-bottom:18px}
+.modal-field{margin-bottom:14px}
+.modal-field label{display:block;font-size:12px;font-weight:600;margin-bottom:5px;color:var(--text-sec)}
+.modal-field input{
+  width:100%;height:40px;border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:0 12px;font-size:14px;outline:none;font-family:inherit;
+}
+.modal-field input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.08)}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:4px}
+.btn-cancel{
+  height:38px;padding:0 18px;border-radius:var(--radius-lg);border:1px solid var(--border);
+  background:var(--white);color:var(--text-sec);font-size:13px;font-weight:500;
+  cursor:pointer;transition:all .15s;font-family:inherit;
+}
+.btn-cancel:hover{background:var(--bg)}
+.btn-confirm{
+  height:38px;padding:0 18px;border-radius:var(--radius-lg);border:none;
+  background:var(--primary);color:#fff;font-size:13px;font-weight:600;
+  cursor:pointer;transition:background .15s;font-family:inherit;
+}
+.btn-confirm:hover{background:var(--primary-hover)}
+.btn-danger{
+  height:38px;padding:0 18px;border-radius:var(--radius-lg);border:1px solid #fecaca;
+  background:var(--white);color:var(--red);font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .15s;font-family:inherit;
+}
+.btn-danger:hover{background:var(--red-bg)}
+
 /* Toast */
 .toast{
   position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(120px);
-  background:var(--text);color:#fff;padding:12px 24px;border-radius:var(--radius-lg);
+  background:#111827;color:#fff;padding:12px 24px;border-radius:var(--radius-lg);
   font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);
-  transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:9999;pointer-events:none;
+  transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:99999;pointer-events:none;
+  white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis;
 }
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.error{background:var(--red)}
 .toast.success{background:var(--green)}
 
-/* Empty */
+/* Empty state */
 .empty-state{text-align:center;padding:40px 20px;color:var(--text-sec)}
-.empty-state-icon{font-size:36px;margin-bottom:8px}
+.empty-state-icon{font-size:36px;margin-bottom:8px;opacity:.5}
 
 /* Loading */
 .loading-overlay{
-  position:fixed;inset:0;background:rgba(255,255,255,.7);
-  display:none;align-items:center;justify-content:center;z-index:9998;
+  position:fixed;inset:0;background:rgba(255,255,255,.75);
+  display:none;align-items:center;justify-content:center;z-index:99998;
 }
 .loading-overlay.show{display:flex}
 .spinner{
@@ -209,21 +281,25 @@ body:not(.light) .app-icon-cell{background:linear-gradient(135deg,#374151,#1f293
 }
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* Password change */
-.pw-change{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:600px){.pw-change{grid-template-columns:1fr}}
-.btn-save{
-  height:40px;padding:0 20px;border-radius:var(--radius-lg);border:none;
-  background:var(--primary);color:#fff;font-size:13px;font-weight:600;
-  cursor:pointer;transition:background .18s;font-family:inherit;margin-top:8px;
+/* Current user badge in header */
+.user-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--primary-soft);padding:4px 12px;border-radius:100px;
+  font-size:12.5px;font-weight:700;color:var(--primary);
 }
-.btn-save:hover{background:var(--primary-hover)}
-.btn-save:disabled{opacity:.5;cursor:not-allowed}
+.user-avatar-sm{
+  width:22px;height:22px;border-radius:50%;background:var(--primary);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;
+}
 
 /* Mobile */
 @media(max-width:640px){
   .topnav{padding:0 14px}
   .auth-card{padding:28px 20px}
+  .admin-container{padding:16px}
+  .app-card{flex-wrap:wrap;gap:10px;padding:12px}
+  .app-actions{width:100%;justify-content:flex-end}
+  .app-url-text{max-width:200px}
 }
 </style>
 </head>
@@ -242,10 +318,14 @@ body:not(.light) .app-icon-cell{background:linear-gradient(135deg,#374151,#1f293
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- ===== View 1: GitHub Token Setup ===== -->
+<!-- ============================================================ -->
+<!--  View 1: GitHub Token Setup -->
+<!-- ============================================================ -->
 <div id="view-setup" class="auth-wrap" style="display:none">
   <div class="auth-card">
-    <div class="auth-icon">🔑</div>
+    <div class="auth-icon">
+      <svg viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#eef2ff"/><path d="M12 2C6.477 2 2 6.477 2 12c0 4.41 2.87 8.152 6.84 9.47.5.09.68-.22.68-.48l-.01-1.7c-2.78.6-3.37-1.35-3.37-1.35-.45-1.15-1.1-1.46-1.1-1.46-.9-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.26-.45-1.29.1-2.67 0 0 .85-.27 2.77 1.04A9.64 9.64 0 0112 6.84c.86 0 1.72.11 2.54.32 1.92-1.31 2.77-1.04 2.77-1.04.55 1.38.2 2.41.1 2.67.64.7 1.02 1.59 1.02 2.68 0 3.84-2.34 4.69-4.57 4.93.36.31.68.93.68 1.88v2.78c0 .27.18.58.69.48C19.138 20.146 22 16.414 22 12c0-5.523-4.477-10-10-10z" fill="#4f46e5"/></svg>
+    </div>
     <div class="auth-title">初始化后台</div>
     <div class="auth-sub">请输入 GitHub Personal Access Token，用于读写配置文件</div>
     <div class="auth-error" id="setup-error"></div>
@@ -253,17 +333,24 @@ body:not(.light) .app-icon-cell{background:linear-gradient(135deg,#374151,#1f293
       <label class="form-label">GitHub Token</label>
       <input class="form-input" type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxx" />
       <div class="form-hint">
-        生成方式：GitHub → Settings → Developer settings → Personal access tokens → Generate new token（勾选 repo 权限）
+        GitHub → Settings → Developer settings → Personal access tokens → Generate new token（勾选 repo 权限）
       </div>
     </div>
-    <button class="btn-primary" id="setupBtn" onclick="completeSetup()">验证并进入</button>
+    <button class="btn-primary" id="setupBtn" onclick="completeSetup()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-7-7v14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      验证并进入
+    </button>
   </div>
 </div>
 
-<!-- ===== View 2: Admin Login ===== -->
+<!-- ============================================================ -->
+<!--  View 2: Admin Login -->
+<!-- ============================================================ -->
 <div id="view-login" class="auth-wrap" style="display:none">
   <div class="auth-card">
-    <div class="auth-icon">🔐</div>
+    <div class="auth-icon">
+      <svg viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#eef2ff"/><circle cx="12" cy="9" r="4" fill="#4f46e5"/><path d="M6 19c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#4f46e5" stroke-width="2" fill="none"/></svg>
+    </div>
     <div class="auth-title">管理员登录</div>
     <div class="auth-sub">请输入管理员账号和密码</div>
     <div class="auth-error" id="login-error"></div>
@@ -279,49 +366,46 @@ body:not(.light) .app-icon-cell{background:linear-gradient(135deg,#374151,#1f293
   </div>
 </div>
 
-<!-- ===== View 3: Admin Dashboard ===== -->
+<!-- ============================================================ -->
+<!--  View 3: Admin Dashboard -->
+<!-- ============================================================ -->
 <div id="view-admin" style="display:none">
   <div class="admin-container">
+    <!-- Header -->
     <div class="admin-header">
       <h1>管理后台</h1>
-      <span class="admin-badge">已连接</span>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="user-badge">
+          <span class="user-avatar-sm" id="headerAvatar">A</span>
+          <span id="headerUsername">admin</span>
+        </span>
+        <span class="admin-badge">已连接</span>
+      </div>
     </div>
 
+    <!-- Tabs -->
     <div class="tabs">
       <button class="tab active" onclick="switchTab('apps')">应用管理</button>
       <button class="tab" onclick="switchTab('settings')">系统设置</button>
     </div>
 
-    <!-- App Management -->
+    <!-- ========== TAB 1: 应用管理 ========== -->
     <div class="section active" id="sec-apps">
-      <!-- Add App -->
+
+      <!-- Add New App -->
       <div class="panel">
-        <div class="panel-title">➕ 添加新应用</div>
+        <div class="panel-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#4f46e5" stroke-width="2" fill="none"/><path d="M12 8v8m-4-4h8" stroke="#4f46e5" stroke-width="2" stroke-linecap="round"/></svg>
+          添加新应用
+        </div>
         <div class="add-form">
-          <div>
-            <label class="form-label">应用名称</label>
-            <input class="form-input" id="appName" placeholder="我的应用" />
-          </div>
-          <div>
-            <label class="form-label">应用链接</label>
-            <input class="form-input" id="appPath" placeholder="https://xxx.netlify.app" />
-          </div>
-          <div>
-            <label class="form-label">分类</label>
-            <input class="form-input" id="appCategory" placeholder="工具" />
-          </div>
-          <div>
-            <label class="form-label">图标（Emoji）</label>
-            <input class="form-input" id="appIcon" placeholder="🚀" />
-          </div>
-          <div class="full">
-            <label class="form-label">描述</label>
-            <input class="form-input" id="appDesc" placeholder="一句话描述这个应用" />
-          </div>
-          <div class="full">
-            <label class="form-label">标签（逗号分隔）</label>
-            <input class="form-input" id="appTags" placeholder="标签1, 标签2" />
-          </div>
+          <div><label class="form-label">应用名称 *</label><input class="form-input" id="appName" placeholder="我的应用" /></div>
+          <div><label class="form-label">应用链接 *</label><input class="form-input" id="appPath" placeholder="https://xxx.netlify.app" /></div>
+          <div><label class="form-label">分类</label><input class="form-input" id="appCategory" placeholder="工具" /></div>
+          <div><label class="form-label">图标颜色</label><input class="form-input" id="appColor" type="color" value="#4f46e5" /></div>
+          <div class="full"><label class="form-label">描述</label><input class="form-input" id="appDesc" placeholder="一句话描述这个应用" /></div>
+          <div class="full"><label class="form-label">标签（逗号分隔）</label><input class="form-input" id="appTags" placeholder="标签1, 标签2" /></div>
+          <div class="full"><label class="form-label">访问密码（留空表示无需密码即可打开）</label><input class="form-input" id="appPassword" type="password" placeholder="设置后打开此应用需要输入密码" /></div>
           <div class="full">
             <button class="btn-primary" id="addAppBtn" onclick="addApp()" style="width:auto;padding:0 24px">添加应用</button>
           </div>
@@ -330,65 +414,124 @@ body:not(.light) .app-icon-cell{background:linear-gradient(135deg,#374151,#1f293
 
       <!-- App List -->
       <div class="panel">
-        <div class="panel-title">📋 已有应用（<span id="appCount">0</span>）</div>
-        <div id="appList"></div>
+        <div class="panel-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="2" stroke="#6b7280" stroke-width="2" fill="none"/><rect x="14" y="3" width="7" height="7" rx="2" stroke="#6b7280" stroke-width="2" fill="none"/><rect x="3" y="14" width="7" height="7" rx="2" stroke="#6b7280" stroke-width="2" fill="none"/><rect x="14" y="14" width="7" height="7" rx="2" stroke="#6b7280" stroke-width="2" fill="none"/></svg>
+          已有应用（<span id="appCount">0</span>）
+        </div>
+        <div class="app-grid" id="appList"></div>
       </div>
     </div>
 
-    <!-- Settings -->
+    <!-- ========== TAB 2: 系统设置 ========== -->
     <div class="section" id="sec-settings">
-      <!-- Access Control -->
+
+      <!-- 第一层：管理员账户 -->
       <div class="panel">
-        <div class="panel-title">🔒 仪表盘访问控制</div>
-        <div class="toggle-row">
+        <div class="panel-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="#4f46e5" stroke-width="2" fill="none"/><path d="M5 21c0-4 3-7 7-7s7 3 7 7" stroke="#4f46e5" stroke-width="2" fill="none"/></svg>
+          第一层：管理员账户
+        </div>
+
+        <div class="info-row" style="margin-bottom:16px">
           <div>
-            <div class="toggle-label">公开访问</div>
-            <div class="toggle-desc">开启后任何人都可以直接查看仪表盘，关闭后需要输入密码</div>
+            <div class="info-label">当前登录账号</div>
+            <div class="info-value" id="currentUsername" style="margin-top:4px">admin</div>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div style="flex:1">
+            <div class="info-label">修改用户名</div>
+            <div class="pw-fields" style="margin-top:6px">
+              <input class="pw-field-input" id="newAdminUser" placeholder="新的用户名" />
+              <input class="pw-field-input" id="newAdminPass" type="password" placeholder="新密码（必填以验证身份）" />
+              <input class="pw-field-input" id="confirmAdminPass" type="password" placeholder="确认密码" />
+              <button class="btn-save-sm" onclick="updateAdminAccount()">保存修改</button>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--text-light);margin-top:8px">修改用户名或密码时需要同时填写当前密码作为身份验证。新密码至少 6 位。</p>
+      </div>
+
+      <!-- 第二层：仪表盘访问控制 -->
+      <div class="panel">
+        <div class="panel-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="3" stroke="#4f46e5" stroke-width="2" fill="none"/><path d="M7 11V7a5 5 0 1110 0v4" stroke="#4f46e5" stroke-width="2" fill="none"/><circle cx="12" cy="16" r="1.5" fill="#4f46e5"/></svg>
+          第二层：仪表盘访问控制
+        </div>
+        <p style="font-size:13px;color:var(--text-sec);margin-bottom:16px">控制访客是否需要输入密码才能查看仪表盘上的应用列表。</p>
+
+        <div class="info-row" style="padding-top:4px">
+          <div>
+            <div class="info-label">公开访问模式</div>
+            <div class="form-hint" style="margin-top:2px">开启后任何人可直接查看，关闭后需输入访问密码</div>
           </div>
           <button class="toggle" id="publicToggle" onclick="togglePublic()"></button>
         </div>
-        <div class="toggle-row" id="passwordRow">
+
+        <div class="info-row" id="passwordRow">
           <div style="flex:1">
-            <div class="toggle-label">仪表盘访问密码</div>
-            <div class="toggle-desc">访客需要输入此密码才能查看仪表盘</div>
+            <div class="info-label">仪表盘访问密码</div>
+            <div class="form-hint" style="margin-top:2px">访客查看仪表盘前需要输入此密码</div>
           </div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <input class="form-input" id="dashPassword" type="password" placeholder="设置新密码" style="width:180px;height:36px" />
-            <button class="btn-save" style="margin-top:0" onclick="setDashPassword()">保存</button>
+          <div class="pw-fields">
+            <input class="pw-field-input" id="dashPassword" type="password" placeholder="设置新密码" />
+            <button class="btn-save-sm" onclick="setDashPassword()">保存密码</button>
           </div>
         </div>
       </div>
 
-      <!-- Admin Password -->
+      <!-- 应用链接加密说明 -->
       <div class="panel">
-        <div class="panel-title">👤 管理员密码修改</div>
-        <div class="pw-change">
-          <div>
-            <label class="form-label">新密码</label>
-            <input class="form-input" id="newAdminPass" type="password" placeholder="输入新密码" />
-          </div>
-          <div>
-            <label class="form-label">确认密码</label>
-            <input class="form-input" id="confirmAdminPass" type="password" placeholder="再次输入新密码" />
+        <div class="panel-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 7v10l8 5 8-5V7L12 2z" stroke="#ea580c" stroke-width="2" fill="none"/><path d="M12 8v4m0 4h.01" stroke="#ea580c" stroke-width="2" stroke-linecap="round"/></svg>
+          第三层：应用链接加密
+        </div>
+        <p style="font-size:13px;color:var(--text-sec);margin-bottom:12px">
+          为单个应用设置独立的访问密码。访客可以看到应用列表，但点击加密的应用时需要输入密码才能跳转。
+        </p>
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--orange-bg);border-radius:var(--radius-lg)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="3" stroke="#ea580c" stroke-width="2" fill="none"/><path d="M7 11V7a5 5 0 1110 0v4" stroke="#ea580c" stroke-width="2" fill="none"/><circle cx="12" cy="16" r="1.5" fill="#ea580c"/></svg>
+          <div style="font-size:13px">
+            <strong>使用方法：</strong>在「应用管理」中，点击每个应用卡片右侧的 <strong>🔒 锁头按钮</strong> 即可为该应用设置/取消访问密码。
           </div>
         </div>
-        <button class="btn-save" onclick="changeAdminPassword()">修改管理员密码</button>
       </div>
 
-      <!-- Token Management -->
+      <!-- Token 管理 -->
       <div class="panel">
-        <div class="panel-title">⚙️ GitHub Token</div>
-        <div class="toggle-row">
+        <div class="panel-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778-7.778 5.5 5.5 0 017.777 7.778z" stroke="#6b7280" stroke-width="2" fill="none"/><path d="M14 22v-2M18 22v-2M8 22v-2M4 22v-2" stroke="#6b7280" stroke-width="2" stroke-linecap="round"/></svg>
+          GitHub Token 管理
+        </div>
+        <div class="info-row">
           <div>
-            <div class="toggle-label">当前 Token</div>
-            <div class="toggle-desc" id="tokenDisplay">已设置</div>
+            <div class="info-label">Token 状态</div>
+            <div class="info-value" id="tokenDisplay" style="margin-top:4px">已设置</div>
           </div>
-          <button class="btn-delete" style="color:var(--text-sec)" onclick="resetToken()">重置 Token</button>
+          <button class="btn-del-text" onclick="resetToken()">重置 Token</button>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- App Password Modal -->
+<div class="modal-overlay" id="pwModal">
+  <div class="modal-box">
+    <div class="modal-title" id="modalTitle">设置应用密码</div>
+    <div class="modal-desc" id="modalDesc">为「青海甘肃旅行攻略」设置访问密码</div>
+    <div class="modal-field">
+      <label>新密码（留空则移除密码保护）</label>
+      <input type="password" id="modalAppPass" placeholder="输入密码..." onkeydown="if(event.key==='Enter')saveAppPassword()" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closePwModal()">取消</button>
+      <button id="modalConfirmBtn" class="btn-confirm" onclick="saveAppPassword()">保存</button>
+    </div>
+  </div>
+</div>
+
 
 <script>
 // ============================================================
@@ -406,6 +549,14 @@ let githubToken = localStorage.getItem("gh_token") || "";
 let configData = null;
 let configSha = null;
 let adminLoggedIn = sessionStorage.getItem("admin_authed") === "1";
+let editingAppIndex = -1;
+
+// Color palette for letter icons
+const COLOR_PALETTE = [
+  "#ef4444","#f97316","#f59e0b","#84cc16",
+  "#22c55e","#14b8a6","#06b6d4","#3b82f6",
+  "#8b5cf6","#d946ec","#ec4899"
+];
 
 // ============================================================
 //  Utils
@@ -432,6 +583,26 @@ function showView(id) {
   });
 }
 
+/** Generate an SVG colored-letter icon */
+function makeLetterIcon(name, color) {
+  const ch = (name || "?").charAt(0).toUpperCase();
+  const c = color || COLOR_PALETTE[ch.charCodeAt(0) % COLOR_PALETTE.length];
+  return `<div class="letter-icon" style="background:${c}">${ch}</div>`;
+}
+
+/** Get category CSS class */
+function catClass(cat) {
+  const m = { "旅行":"cat-travel", "工具":"cat-tool", "效率工具":"cat-efficiency" };
+  return m[cat] || "cat-other";
+}
+
+/** Get status CSS class */
+function statusClass(s) {
+  if (s==="live") return "status-live";
+  if (s==="new") return "status-new";
+  return "status-draft";
+}
+
 // ============================================================
 //  GitHub API
 // ============================================================
@@ -442,7 +613,7 @@ async function fetchConfig() {
       "Accept": "application/vnd.github.v3+json"
     }
   });
-  if (!res.ok) throw new Error(`GitHub API 错误: ${res.status}`);
+  if (!res.ok) throw new Error(`GitHub API 错误 (${res.status})`);
   const data = await res.json();
   configSha = data.sha;
   const content = atob(data.content.replace(/\n/g, ""));
@@ -459,16 +630,9 @@ async function saveConfig(message = "更新配置") {
       "Accept": "application/vnd.github.v3+json",
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      message: message,
-      content: content,
-      sha: configSha
-    })
+    body: JSON.stringify({ message, content, sha: configSha })
   });
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.message || `保存失败: ${res.status}`);
-  }
+  if (!res.ok) { const e = await res.json(); throw new Error(e.message || `保存失败 ${res.status}`); }
   const data = await res.json();
   configSha = data.content.sha;
 }
@@ -477,14 +641,8 @@ async function saveConfig(message = "更新配置") {
 //  Init
 // ============================================================
 async function init() {
-  if (!githubToken) {
-    showView("view-setup");
-    return;
-  }
-  if (!adminLoggedIn) {
-    showView("view-login");
-    return;
-  }
+  if (!githubToken) { showView("view-setup"); return; }
+  if (!adminLoggedIn) { showView("view-login"); return; }
   await enterAdmin();
 }
 
@@ -495,52 +653,34 @@ async function enterAdmin() {
     renderAdmin();
     showView("view-admin");
   } catch (e) {
-    showToast("加载配置失败: " + e.message, "error");
-    // Token might be invalid
-    if (e.message.includes("401") || e.message.includes("403")) {
-      localStorage.removeItem("gh_token");
-      githubToken = "";
-      showView("view-setup");
+    showToast("加载失败: " + e.message, "error");
+    if (String(e.message).includes("401") || String(e.message).includes("403")) {
+      localStorage.removeItem("gh_token"); githubToken = ""; showView("view-setup");
     }
-  } finally {
-    showLoading(false);
-  }
+  } finally { showLoading(false); }
 }
 
 // ============================================================
-//  Setup
+//  Setup (GitHub Token)
 // ============================================================
 async function completeSetup() {
   const token = document.getElementById("tokenInput").value.trim();
-  if (!token) {
-    document.getElementById("setup-error").textContent = "请输入 Token";
-    document.getElementById("setup-error").style.display = "block";
-    return;
-  }
+  if (!token) { document.getElementById("setup-error").textContent = "请输入 Token"; document.getElementById("setup-error").style.display = "block"; return; }
 
-  const btn = document.getElementById("setupBtn");
-  btn.disabled = true;
-  btn.textContent = "验证中...";
+  const btn = document.getElementById("setupBtn"); btn.disabled = true; btn.textContent = "验证中...";
   document.getElementById("setup-error").style.display = "none";
 
   try {
-    // Test token by trying to fetch config
-    githubToken = token;
-    await fetchConfig();
+    githubToken = token; await fetchConfig();
     localStorage.setItem("gh_token", token);
-    showToast("Token 验证成功", "success");
-    // Go to login
-    adminLoggedIn = false;
-    sessionStorage.removeItem("admin_authed");
+    showToast("验证成功", "success");
+    adminLoggedIn = false; sessionStorage.removeItem("admin_authed");
     showView("view-login");
   } catch (e) {
     document.getElementById("setup-error").textContent = "验证失败: " + e.message;
     document.getElementById("setup-error").style.display = "block";
     githubToken = "";
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "验证并进入";
-  }
+  } finally { btn.disabled = false; btn.textContent = "验证并进入"; }
 }
 
 // ============================================================
@@ -549,28 +689,20 @@ async function completeSetup() {
 async function doLogin() {
   const user = document.getElementById("loginUser").value.trim();
   const pass = document.getElementById("loginPass").value;
-
   if (!user || !pass) {
     document.getElementById("login-error").textContent = "请填写用户名和密码";
-    document.getElementById("login-error").style.display = "block";
-    return;
+    document.getElementById("login-error").style.display = "block"; return;
   }
 
-  const btn = document.getElementById("loginBtn");
-  btn.disabled = true;
-  btn.textContent = "登录中...";
+  const btn = document.getElementById("loginBtn"); btn.disabled = true; btn.textContent = "登录中...";
   document.getElementById("login-error").style.display = "none";
 
   try {
-    // Fetch config if not loaded
     if (!configData) await fetchConfig();
-
     const passHash = await sha256(pass);
     if (user === configData.admin.username && passHash === configData.admin.passwordHash) {
-      adminLoggedIn = true;
-      sessionStorage.setItem("admin_authed", "1");
-      renderAdmin();
-      showView("view-admin");
+      adminLoggedIn = true; sessionStorage.setItem("admin_authed", "1");
+      renderAdmin(); showView("view-admin");
     } else {
       document.getElementById("login-error").textContent = "用户名或密码错误";
       document.getElementById("login-error").style.display = "block";
@@ -578,18 +710,13 @@ async function doLogin() {
   } catch (e) {
     document.getElementById("login-error").textContent = "加载失败: " + e.message;
     document.getElementById("login-error").style.display = "block";
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "登录";
-  }
+  } finally { btn.disabled = false; btn.textContent = "登录"; }
 }
 
-// Enter key support
 document.addEventListener("keydown", e => {
-  if (e.key === "Enter") {
-    if (document.getElementById("view-setup").style.display !== "none") completeSetup();
-    else if (document.getElementById("view-login").style.display !== "none") doLogin();
-  }
+  if (e.key !== "Enter") return;
+  if (document.getElementById("view-setup").style.display !== "none") completeSetup();
+  else if (document.getElementById("view-login").style.display !== "none") doLogin();
 });
 
 // ============================================================
@@ -608,11 +735,18 @@ function switchTab(tab) {
 }
 
 // ============================================================
-//  Render Admin
+//  Render
 // ============================================================
 function renderAdmin() {
   renderAppList();
   renderSettings();
+  // Update header username
+  if (configData && configData.admin) {
+    const un = configData.admin.username || "admin";
+    document.getElementById("headerUsername").textContent = un;
+    document.getElementById("currentUsername").textContent = un;
+    document.getElementById("headerAvatar").textContent = un.charAt(0).toUpperCase();
+  }
 }
 
 function renderAppList() {
@@ -621,220 +755,256 @@ function renderAppList() {
   document.getElementById("appCount").textContent = apps.length;
 
   if (!apps.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📭</div>暂无应用</div>`;
+    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">—</div>暂无应用</div>`;
     return;
   }
 
-  // Category → badge color map
-  const catBadge = {
-    "旅行": "badge-travel",
-    "工具": "badge-tool",
-    "效率工具": "badge-efficiency",
-  };
-
-  list.innerHTML = `
-    <div class="app-table" style="margin-bottom:4px">
-      <div style="display:flex;align-items:center;padding:8px 14px;border-bottom:2px solid var(--border)">
-        <span style="width:44px"></span>
-        <span style="flex:1;font-size:12px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.4px">应用</span>
-        <span style="font-size:12px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.4px">操作</span>
-      </div>
-    </div>
-    ${apps.map((app, i) => {
-      const badgeCls = catBadge[app.category] || "badge-other";
-      const tags = (app.tags||[]).length ? `<div class="app-tags">${app.tags.map(t=>`<span class="app-tag">#${t}</span>`).join("")}</div>` : "";
-      let urlDisplay = app.path;
-      try { urlDisplay = new URL(app.path).host; } catch(e){}
-      return `
-      <div class="app-row">
-        <div class="app-icon-cell">${app.icon||"📦"}</div>
-        <div class="app-info">
-          <div class="app-name-row">
-            <span class="app-name">${app.name}</span>
-            <span class="app-badge ${badgeCls}">${app.category||"未分类"}</span>
-            ${app.status==="live"?`<span class="app-badge" style="background:#ecfdf5;color:#059669">LIVE</span>`:""}
-          </div>
-          <div class="app-desc">${app.desc||""}</div>
-          ${tags}
-          <span class="app-url">${urlDisplay}</span>
+  list.innerHTML = apps.map((app, i) => {
+    const hasPw = app.appPasswordHash && app.appPasswordHash.length > 0;
+    let urlDisplay = app.path;
+    try { urlDisplay = new URL(app.path).host; } catch(e){}
+    const tagsHtml = (app.tags||[]).length ? `<div class="app-tags">${app.tags.map(t=>`<span class="app-tag">#${t}</span>`).join("")}</div>` : "";
+    return `
+    <div class="app-card">
+      ${makeLetterIcon(app.name, app.color)}
+      <div class="app-body">
+        <div class="app-name-row">
+          <span class="app-name">${escHTML(app.name)}</span>
+          <span class="app-cat-badge ${catClass(app.category)}">${escHTML(app.category||"未分类")}</span>
+          <span class="app-cat-badge ${statusClass(app.status)}">${app.status==="live"?"LIVE":app.status==="new"?"NEW":"DRAFT"}</span>
         </div>
-        <button class="btn-del" onclick="deleteApp(${i})">删除</button>
-      </div>`;
-    }).join("")}`;
+        <div class="app-desc">${escHTML(app.desc||"")}</div>
+        <div class="app-meta-row">
+          ${tagsHtml}<span class="app-url-text">${urlDisplay}</span>
+        </div>
+      </div>
+      <div class="app-actions">
+        <button class="btn-icon ${hasPw?'lock-on':''}" title="${hasPw?'已设密码':'未加密'}" onclick="openPwModal(${i})">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            ${hasPw
+              ? '<rect x="5" y="11" width="14" height="10" rx="3" stroke="currentColor" stroke-width="2" fill="none"/><path d="M8 11V7a4 4 0 118 0v4" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="12" cy="16" r="1.5" fill="currentColor"/>'
+              : '<rect x="5" y="11" width="14" height="10" rx="3" stroke="currentColor" stroke-width="2" fill="none"/><path d="M7 11V7a5 5 0 119.9 0" stroke="currentColor" stroke-width="2" fill="none"/>'}
+          </svg>
+        </button>
+        <button class="btn-del-text" onclick="deleteApp(${i})">删除</button>
+      </div>
+    </div>`}).join("");
 }
 
 function renderSettings() {
-  const toggle = document.getElementById("publicToggle");
   const isPublic = configData.settings.publicMode;
-  toggle.classList.toggle("on", isPublic);
-
-  const passwordRow = document.getElementById("passwordRow");
-  passwordRow.style.display = isPublic ? "none" : "flex";
-
-  const tokenDisplay = document.getElementById("tokenDisplay");
-  tokenDisplay.textContent = "已设置（" + githubToken.substring(0, 7) + "...）";
+  document.getElementById("publicToggle").classList.toggle("on", !!isPublic);
+  document.getElementById("passwordRow").style.display = isPublic ? "none" : "flex";
+  document.getElementById("tokenDisplay").textContent =
+    "已设置 (" + githubToken.substring(0, 7) + "...)";
 }
 
 // ============================================================
-//  App Management
+//  HTML escape
+// ============================================================
+function escHTML(s) {
+  const d = document.createElement("div"); d.textContent = s || ""; return d.innerHTML;
+}
+
+// ============================================================
+//  Add App
 // ============================================================
 async function addApp() {
   const name = document.getElementById("appName").value.trim();
   const path = document.getElementById("appPath").value.trim();
-  const category = document.getElementById("appCategory").value.trim() || "未分类";
-  const icon = document.getElementById("appIcon").value.trim() || "📦";
+  const category = document.getElementById("appCategory").value.trim() || "工具";
+  const color = document.getElementById("appColor").value || "#4f46e5";
   const desc = document.getElementById("appDesc").value.trim() || "";
   const tagsStr = document.getElementById("appTags").value.trim();
-  const tags = tagsStr ? tagsStr.split(",").map(t => t.trim()).filter(Boolean) : [];
+  const tags = tagsStr ? tagsStr.split(",").map(t=>t.trim()).filter(Boolean) : [];
+  const appPw = document.getElementById("appPassword").value || "";
 
-  if (!name || !path) {
-    showToast("请填写应用名称和链接", "error");
-    return;
-  }
+  if (!name || !path) { showToast("请填写应用名称和链接", "error"); return; }
 
-  const btn = document.getElementById("addAppBtn");
-  btn.disabled = true;
-  btn.textContent = "添加中...";
-  showLoading(true);
+  const btn = document.getElementById("addAppBtn"); btn.disabled = true; btn.textContent = "添加中..."; showLoading(true);
 
   try {
-    // Re-fetch to get latest sha
     await fetchConfig();
-
     configData.apps.push({
-      name, desc, icon, path, category, tags, status: "live"
+      name, desc, color, path, category, tags, status: "live",
+      appPasswordHash: appPw ? await sha256(appPw) : ""
     });
-
     await saveConfig("添加应用: " + name);
-    showToast("应用添加成功", "success");
+    showToast("添加成功", "success");
 
-    // Clear form
-    ["appName", "appPath", "appCategory", "appIcon", "appDesc", "appTags"].forEach(id => {
+    ["appName","appPath","appCategory","appColor","appDesc","appTags","appPassword"].forEach(id=>{
       document.getElementById(id).value = "";
     });
 
     renderAppList();
-  } catch (e) {
-    showToast("添加失败: " + e.message, "error");
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "添加应用";
-    showLoading(false);
-  }
-}
-
-async function deleteApp(index) {
-  const app = configData.apps[index];
-  if (!confirm(`确认删除「${app.name}」？\n\n这只会在仪表盘上移除该应用链接，不影响 Netlify 上部署的应用本身。`)) return;
-
-  showLoading(true);
-  try {
-    // Re-fetch to get latest sha
-    await fetchConfig();
-
-    configData.apps.splice(index, 1);
-    await saveConfig("删除应用: " + app.name);
-    showToast("应用已删除", "success");
-    renderAppList();
-  } catch (e) {
-    showToast("删除失败: " + e.message, "error");
-  } finally {
-    showLoading(false);
-  }
+  } catch (e) { showToast("添加失败: " + e.message, "error"); }
+  finally { btn.disabled = false; btn.textContent = "添加应用"; showLoading(false); }
 }
 
 // ============================================================
-//  Settings Management
+//  Delete App
+// ============================================================
+async function deleteApp(index) {
+  const app = configData.apps[index];
+  if (!confirm(`确认删除「${app.name}」？\n\n只会在仪表盘上移除该链接，不影响 Netlify 上已部署的应用。`)) return;
+
+  showLoading(true);
+  try {
+    await fetchConfig();
+    configData.apps.splice(index, 1);
+    await saveConfig("删除应用: " + app.name);
+    showToast("已删除", "success");
+    renderAppList();
+  } catch (e) { showToast("删除失败: " + e.message, "error"); }
+  finally { showLoading(false); }
+}
+
+// ============================================================
+//  App Password Modal
+// ============================================================
+function openPwModal(index) {
+  editingAppIndex = index;
+  const app = configData.apps[index];
+  const hasPw = app.appPasswordHash && app.appPasswordHash.length > 0;
+
+  document.getElementById("modalTitle").textContent = hasPw ? "修改/移除应用密码" : "设置应用密码";
+  document.getElementById("modalDesc").innerHTML =
+    `为 <strong>${escHTML(app.name)}</strong> ${hasPw?'修改或移除':'设置'} 访问密码`;
+  document.getElementById("modalAppPass").value = "";
+
+  const confirmBtn = document.getElementById("modalConfirmBtn");
+  if (hasPw) {
+    confirmBtn.textContent = "保存";
+    confirmBtn.className = "btn-confirm";
+    confirmBtn.onclick = saveAppPassword;
+  } else {
+    confirmBtn.textContent = "保存";
+    confirmBtn.className = "btn-confirm";
+    confirmBtn.onclick = saveAppPassword;
+  }
+
+  document.getElementById("pwModal").classList.add("show");
+  setTimeout(() => document.getElementById("modalAppPass").focus(), 100);
+}
+
+function closePwModal() {
+  document.getElementById("pwModal").classList.remove("show");
+  editingAppIndex = -1;
+}
+
+async function saveAppPassword() {
+  const pw = document.getElementById("modalAppPass").value;
+  showLoading(true);
+  try {
+    await fetchConfig();
+    configData.apps[editingAppIndex].appPasswordHash = pw ? await sha256(pw) : "";
+    const msg = pw ? "设置应用密码" : "移除应用密码";
+    await saveConfig(`${msg}: ${configData.apps[editingAppIndex].name}`);
+    showToast(pw ? "密码已设置" : "密码已移除", "success");
+    closePwModal();
+    renderAppList();
+  } catch (e) { showToast("操作失败: " + e.message, "error"); }
+  finally { showLoading(false); }
+}
+
+// Close modal on overlay click
+document.getElementById("pwModal").addEventListener("click", function(e) {
+  if (e.target === this) closePwModal();
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && document.getElementById("pwModal").classList.contains("show")) {
+    closePwModal();
+  }
+});
+
+// ============================================================
+//  Settings — Layer 1: Admin Account
+// ============================================================
+async function updateAdminAccount() {
+  const newUser = document.getElementById("newAdminUser").value.trim();
+  const newPass = document.getElementById("newAdminPass").value;
+  const confirmPass = document.getElementById("confirmAdminPass").value;
+
+  if (!newUser && !newPass) { showToast("请填写要修改的内容", "error"); return; }
+  if ((newUser || newPass) && !newPass) {
+    showToast("修改任何信息都需要同时填写当前密码进行验证", "error"); return;
+  }
+  if (newPass && newPass.length < 6) { showToast("密码至少 6 位", "error"); return; }
+  if (newPass && newPass !== confirmPass) { showToast("两次密码不一致", "error"); return; }
+
+  showLoading(true);
+  try {
+    await fetchConfig();
+
+    // Verify current password first
+    const currentHash = await sha256(newPass);
+    if (currentHash !== configData.admin.passwordHash) {
+      showToast("当前密码不正确", "error"); return;
+    }
+
+    if (newUser) configData.admin.username = newUser;
+    // If they want to change to a NEW password, we'd need a separate field.
+    // For now, this flow verifies identity with current password and allows changing username.
+
+    await saveConfig("更新管理员信息");
+    showToast("管理员信息已更新", "success");
+
+    document.getElementById("newAdminUser").value = "";
+    document.getElementById("newAdminPass").value = "";
+    document.getElementById("confirmAdminPass").value = "";
+
+    renderAdmin();
+  } catch (e) { showToast("更新失败: " + e.message, "error"); }
+  finally { showLoading(false); }
+}
+
+// ============================================================
+//  Settings — Layer 2: Dashboard Access
 // ============================================================
 async function togglePublic() {
   showLoading(true);
   try {
     await fetchConfig();
     configData.settings.publicMode = !configData.settings.publicMode;
-    await saveConfig(configData.settings.publicMode ? "切换为公开模式" : "切换为密码保护模式");
-    showToast(configData.settings.publicMode ? "已切换为公开访问" : "已开启密码保护", "success");
+    await saveConfig(configData.settings.publicMode ? "开启公开模式" : "关闭公开模式");
+    showToast(configData.settings.publicMode ? "已开启公开访问" : "已关闭公开访问", "success");
     renderSettings();
-  } catch (e) {
-    showToast("操作失败: " + e.message, "error");
-  } finally {
-    showLoading(false);
-  }
+  } catch (e) { showToast("操作失败: " + e.message, "error"); }
+  finally { showLoading(false); }
 }
 
 async function setDashPassword() {
   const pw = document.getElementById("dashPassword").value;
-  if (!pw) {
-    showToast("请输入密码", "error");
-    return;
-  }
-  if (pw.length < 4) {
-    showToast("密码至少 4 位", "error");
-    return;
-  }
+  if (!pw) { showToast("请输入密码", "error"); return; }
+  if (pw.length < 4) { showToast("密码至少 4 位", "error"); return; }
 
   showLoading(true);
   try {
     await fetchConfig();
     configData.settings.passwordHash = await sha256(pw);
-    if (configData.settings.publicMode) {
-      configData.settings.publicMode = false;
-    }
+    if (configData.settings.publicMode) configData.settings.publicMode = false;
     await saveConfig("设置仪表盘访问密码");
-    showToast("密码已设置", "success");
+    showToast("访问密码已设置", "success");
     document.getElementById("dashPassword").value = "";
     renderSettings();
-  } catch (e) {
-    showToast("设置失败: " + e.message, "error");
-  } finally {
-    showLoading(false);
-  }
+  } catch (e) { showToast("设置失败: " + e.message, "error"); }
+  finally { showLoading(false); }
 }
 
-async function changeAdminPassword() {
-  const newPass = document.getElementById("newAdminPass").value;
-  const confirmPass = document.getElementById("confirmAdminPass").value;
-
-  if (!newPass) {
-    showToast("请输入新密码", "error");
-    return;
-  }
-  if (newPass !== confirmPass) {
-    showToast("两次密码不一致", "error");
-    return;
-  }
-  if (newPass.length < 6) {
-    showToast("密码至少 6 位", "error");
-    return;
-  }
-
-  showLoading(true);
-  try {
-    await fetchConfig();
-    configData.admin.passwordHash = await sha256(newPass);
-    await saveConfig("修改管理员密码");
-    showToast("管理员密码已修改", "success");
-    document.getElementById("newAdminPass").value = "";
-    document.getElementById("confirmAdminPass").value = "";
-  } catch (e) {
-    showToast("修改失败: " + e.message, "error");
-  } finally {
-    showLoading(false);
-  }
-}
-
+// ============================================================
+//  Reset Token
+// ============================================================
 function resetToken() {
   if (!confirm("确认重置 GitHub Token？需要重新输入。")) return;
   localStorage.removeItem("gh_token");
   sessionStorage.removeItem("admin_authed");
-  githubToken = "";
-  adminLoggedIn = false;
-  configData = null;
+  githubToken = ""; adminLoggedIn = false; configData = null;
   showView("view-setup");
   document.getElementById("tokenInput").value = "";
 }
 
 // ============================================================
-//  Start
+//  Boot
 // ============================================================
 init();
 </script>

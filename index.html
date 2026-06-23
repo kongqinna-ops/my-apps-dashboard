@@ -175,13 +175,14 @@
     .empty-t{font-size:17px;font-weight:600;margin-bottom:6px}
     .empty-d{font-size:14px;color:var(--text-sec)}
 
-    /* Mobile nav collapse */
-    @media(max-width:640px){
+  /* Mobile nav collapse */
+  @media(max-width:640px){
       .topnav{padding:0 14px;gap:10px}
       .tn-team,.tn-scope,.tn-link span{display:none}
       .hero-search{width:180px}
       .btn-outline{height:34px;padding:0 12px;font-size:12px}
-    }
+  }
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
   </style>
 </head>
 <body>
@@ -238,6 +239,17 @@
 <!-- Grid -->
 <div class="grid" id="grid"></div>
 
+<!-- App Password Modal (for per-app link protection) -->
+<div id="appPwModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);align-items:center;justify-content:center;z-index:9999;animation:fadeIn .15s">
+  <div style="background:#fff;border-radius:16px;padding:32px 36px;max-width:380px;width:92%;box-shadow:0 10px 40px rgba(0,0,0,.15)">
+    <div style="font-size:18px;font-weight:700;margin-bottom:6px">🔒 需要密码</div>
+    <div id="appPwModalDesc" style="font-size:13px;color:#6b7280;margin-bottom:20px">此应用已加密，请输入访问密码</div>
+    <div id="appPwError" style="background:#fef2f2;color:#dc2626;font-size:12.5px;padding:8px 12px;border-radius:8px;margin-bottom:14px;display:none">密码错误</div>
+    <input type="password" id="appPwInput" placeholder="输入应用访问密码" onkeydown="if(event.key==='Enter')verifyAppPassword()" style="width:100%;height:44px;border:1px solid #e5e7eb;border-radius:10px;padding:0 14px;font-size:14px;outline:none;font-family:inherit;margin-bottom:8px" />
+    <button onclick="verifyAppPassword()" style="width:100%;height:42px;border-radius:10px;border:none;background:#4f46e5;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">确认打开</button>
+  </div>
+</div>
+
 <script>
 // ============================================================
 //  Fallback apps (used when config.json can't be fetched)
@@ -246,7 +258,7 @@ const FALLBACK_APPS = [
   {
     name: "青海甘肃旅行攻略",
     desc: "大西北环线旅行攻略，涵盖行程规划、景点推荐、美食住宿等实用信息。",
-    icon: "🏔️",
+    color: "#d97706",
     path: "https://thunderous-dodol-05fb2f.netlify.app/",
     category: "旅行",
     tags: ["青海", "甘肃", "攻略"],
@@ -255,7 +267,7 @@ const FALLBACK_APPS = [
   {
     name: "Markdown 排版编辑器",
     desc: "支持实时预览的 Markdown 编辑器，适合撰写文档和排版内容。",
-    icon: "📝",
+    color: "#2563eb",
     path: "https://imaginative-tartufo-d12aa2.netlify.app/",
     category: "工具",
     tags: ["Markdown", "编辑器"],
@@ -264,7 +276,7 @@ const FALLBACK_APPS = [
   {
     name: "One Step 待办任务管理",
     desc: "简洁高效的任务管理工具，帮你一步一步完成每天的目标。",
-    icon: "📋",
+    color: "#059669",
     path: "https://profound-figolla-a17913.netlify.app/",
     category: "效率工具",
     tags: ["任务", "待办"],
@@ -365,6 +377,14 @@ function toggleTheme(){
 
 /* Categories */
 const tagStyles = ["","mt-green","mt-blue","mt-orange"];
+const ICON_COLORS = ["#ef4444","#f97316","#f59e0b","#84cc16","#22c55e","#14b8a6","#06b6d4","#3b82f6","#8b5cf6","#d946ef"];
+
+function letterIcon(name, color) {
+  const c = color || ICON_COLORS[(name||"?").charCodeAt(0) % ICON_COLORS.length];
+  const ch = (name || "?").charAt(0).toUpperCase();
+  return `<div style="width:44px;height:44px;border-radius:${var('--radius-lg', '12px')};background:${c};display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:800;flex-shrink:0">${ch}</div>`;
+}
+
 function getCats(){ const s=new Set(); APPS.forEach(a=>s.add(a.category)); return ["全部",...Array.from(s).sort()]; }
 
 function renderTags(){
@@ -396,13 +416,35 @@ function render(){
     return;
   }
 
-  grid.innerHTML=filtered.map((app,i)=>{
+  grid.innerHTML=filtered.map((app, i)=>{
     let url=app.path;
     try{ url=new URL(app.path).hostname; }catch(e){}
+    const hasPw = app.appPasswordHash && app.appPasswordHash.length > 0;
+    const lockBadge = hasPw ? '<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;background:#fff7ed;color:#ea580c;margin-left:6px">🔒 加密</span>' : "";
+    // For password-protected apps, use onclick instead of href
+    if (hasPw) {
+      return `<div class="card" style="cursor:pointer" onclick="requestAppPw(${APPS.indexOf(app)})">
+        <div class="card-inner">
+          <div class="card-head">
+            ${letterIcon(app.name, app.color)}
+            <span class="card-status status-${app.status||'draft'}">${app.status==='live'?'LIVE':app.status==='new'?'NEW':'DRAFT'}${lockBadge}</span>
+          </div>
+          <div class="card-name">${app.name}</div>
+          <div class="card-desc">${app.desc}</div>
+          <div class="card-meta">
+            ${(app.tags||[]).map(t=>`<span class="meta-tag ${tagStyles[(i+1)%tagStyles.length]}">${t}</span>`).join("")}
+          </div>
+        </div>
+        <div class="card-foot">
+          <span class="card-url">${url}</span>
+          <span class="card-go">需密码 ↗</span>
+        </div>
+      </div>`;
+    }
     return `<a class="card" href="${app.path}" target="_blank" rel="noopener">
       <div class="card-inner">
         <div class="card-head">
-          <div class="card-icon">${app.icon}</div>
+          ${letterIcon(app.name, app.color)}
           <span class="card-status status-${app.status||'draft'}">${app.status==='live'?'LIVE':app.status==='new'?'NEW':'DRAFT'}</span>
         </div>
         <div class="card-name">${app.name}</div>
@@ -417,6 +459,49 @@ function render(){
       </div>
     </a>`}).join("");
 }
+
+// ============================================================
+//  Per-app Password Gate
+// ============================================================
+let pendingAppIndex = -1;
+
+function requestAppPw(index) {
+  pendingAppIndex = index;
+  const app = APPS[index];
+  document.getElementById("appPwModalDesc").textContent =
+    `「${app.name}」已设置访问密码，输入正确密码后即可打开`;
+  document.getElementById("appPwInput").value = "";
+  document.getElementById("appPwError").style.display = "none";
+  document.getElementById("appPwModal").style.display = "flex";
+  setTimeout(() => document.getElementById("appPwInput").focus(), 100);
+}
+
+function verifyAppPassword() {
+  if (pendingAppIndex < 0) return;
+  const input = document.getElementById("appPwInput").value;
+  const app = APPS[pendingAppIndex];
+  sha256(input).then(hash => {
+    if (hash === app.appPasswordHash) {
+      closeAppPwModal();
+      window.open(app.path, "_blank", "noopener");
+    } else {
+      document.getElementById("appPwError").style.display = "block";
+      document.getElementById("appPwInput").value = "";
+    }
+  });
+}
+
+function closeAppPwModal() {
+  document.getElementById("appPwModal").style.display = "none";
+  pendingAppIndex = -1;
+}
+
+document.getElementById("appPwModal").addEventListener("click", function(e) {
+  if (e.target === this) closeAppPwModal();
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") closeAppPwModal();
+});
 
 let timer;
 searchInput.addEventListener("input",()=>{clearTimeout(timer);timer=setTimeout(render,120)});
