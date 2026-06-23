@@ -62,6 +62,20 @@
       ],
       "status": "live",
       "appPasswordHash": ""
+    },
+    {
+      "name": "\u65b0\u5a92\u4f53\u6e20\u9053\u6570\u636e\u5206\u6790\u62a5\u544a",
+      "desc": "\u65b0\u5a92\u4f53\u6e20\u9053\u6570\u636e\u5206\u6790\uff0c\u53ef\u89c6\u5316\u5c55\u793a\u5404\u5e73\u53f0\u6570\u636e\u8868\u73b0",
+      "color": "#f59e0b",
+      "path": "https://monumental-mooncake-b03164.netlify.app/",
+      "category": "\u5a92\u4f53",
+      "tags": [
+        "\u65b0\u5a92\u4f53",
+        "\u6570\u636e\u5206\u6790",
+        "\u62a5\u544a"
+      ],
+      "status": "live",
+      "appPasswordHash": ""
     }
   ]
 }
