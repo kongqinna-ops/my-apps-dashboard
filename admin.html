@@ -20,7 +20,8 @@
   --shadow-sm:0 1px 2px rgba(0,0,0,.04);
   --shadow-md:0 2px 8px rgba(0,0,0,.06);
   --shadow-lg:0 8px 24px rgba(0,0,0,.1);
-  --font:-apple-system,BlinkMacSystemFont,"Noto Sans SC","Segoe UI",Roboto,sans-serif;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC",system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+  --font-mono:"Cascadia Code","SF Mono",Consolas,"Liberation Mono",Menlo,monospace;
 }
 body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh}
 
@@ -103,23 +104,62 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 }
 .panel-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
 
-/* App List */
-.app-item{
-  display:flex;align-items:center;gap:14px;padding:14px 0;
-  border-bottom:1px solid var(--border-light);
+/* App List - Table Style */
+.app-table{width:100%;border-collapse:collapse}
+.app-table th{
+  text-align:left;font-size:12px;font-weight:700;color:var(--text-sec);
+  text-transform:uppercase;letter-spacing:.4px;padding:10px 14px;border-bottom:2px solid var(--border);
 }
-.app-item:last-child{border-bottom:none}
-.app-item-icon{font-size:24px;width:40px;height:40px;border-radius:var(--radius);background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.app-item-info{flex:1;min-width:0}
-.app-item-name{font-size:14px;font-weight:600}
-.app-item-meta{font-size:12px;color:var(--text-light);font-family:"SF Mono",Consolas,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.app-item-cat{font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--blue-bg);color:var(--blue);margin-left:8px}
-.btn-delete{
-  height:34px;padding:0 14px;border-radius:var(--radius);border:1px solid var(--border);
-  background:var(--white);color:var(--red);font-size:13px;font-weight:500;
-  cursor:pointer;transition:all .18s;font-family:inherit;flex-shrink:0;
+.app-row{display:flex;align-items:center;gap:16px;padding:14px 14px;
+  border-bottom:1px solid var(--border-light);transition:background .15s;
 }
-.btn-delete:hover{background:var(--red-bg);border-color:var(--red)}
+.app-row:hover{background:var(--primary-soft)}
+.app-row:last-child{border-bottom:none}
+
+/* Icon */
+.app-icon-cell{flex-shrink:0;width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,#f3f4f6,#e5e7eb);
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  line-height:1;
+}
+.dark-mode .app-icon-cell,
+body:not(.light) .app-icon-cell{background:linear-gradient(135deg,#374151,#1f2937)}
+
+/* Info */
+.app-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.app-name-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.app-name{font-size:14.5px;font-weight:700;color:var(--text)}
+.app-badge{
+  font-size:11px;font-weight:600;padding:2px 9px;border-radius:100px;
+  flex-shrink:0;
+}
+.badge-travel{background:#fef3c7;color:#d97706}
+.badge-tool{background:#dbeafe;color:#2563eb}
+.badge-efficiency{background:#d1fae5;color:#059669}
+.badge-other{background:#f3f4f6;color:#6b7280}
+.app-desc{font-size:12.5px;color:var(--text-sec);line-height:1.45}
+.app-url{
+  font-size:11.5px;color:var(--text-light);
+  font-family:"Cascadia Code","SF Mono",Consolas,"Liberation Mono",Menlo,monospace;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px;
+  padding:3px 8px;border-radius:6px;background:var(--bg);
+  display:inline-block;margin-top:2px;
+}
+
+/* Tags */
+.app-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:2px}
+.app-tag{
+  font-size:11px;font-weight:500;padding:2px 8px;border-radius:5px;
+  background:var(--bg);color:var(--text-sec);white-space:nowrap;
+}
+
+/* Delete */
+.btn-del{
+  height:34px;padding:0 16px;border-radius:var(--radius-lg);border:1px solid #fecaca;
+  background:#fff;color:var(--red,#dc2626);font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .18s;font-family:inherit;flex-shrink:0;opacity:.85;
+}
+.btn-del:hover{background:var(--red-bg,#fef2f2);border-color:var(--red,#dc2626);opacity:1}
 
 /* Add Form */
 .add-form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
@@ -585,19 +625,42 @@ function renderAppList() {
     return;
   }
 
-  list.innerHTML = apps.map((app, i) => `
-    <div class="app-item">
-      <div class="app-item-icon">${app.icon || "📦"}</div>
-      <div class="app-item-info">
-        <div class="app-item-name">
-          ${app.name}
-          <span class="app-item-cat">${app.category || "未分类"}</span>
-        </div>
-        <div class="app-item-meta">${app.path}</div>
+  // Category → badge color map
+  const catBadge = {
+    "旅行": "badge-travel",
+    "工具": "badge-tool",
+    "效率工具": "badge-efficiency",
+  };
+
+  list.innerHTML = `
+    <div class="app-table" style="margin-bottom:4px">
+      <div style="display:flex;align-items:center;padding:8px 14px;border-bottom:2px solid var(--border)">
+        <span style="width:44px"></span>
+        <span style="flex:1;font-size:12px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.4px">应用</span>
+        <span style="font-size:12px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.4px">操作</span>
       </div>
-      <button class="btn-delete" onclick="deleteApp(${i})">删除</button>
     </div>
-  `).join("");
+    ${apps.map((app, i) => {
+      const badgeCls = catBadge[app.category] || "badge-other";
+      const tags = (app.tags||[]).length ? `<div class="app-tags">${app.tags.map(t=>`<span class="app-tag">#${t}</span>`).join("")}</div>` : "";
+      let urlDisplay = app.path;
+      try { urlDisplay = new URL(app.path).host; } catch(e){}
+      return `
+      <div class="app-row">
+        <div class="app-icon-cell">${app.icon||"📦"}</div>
+        <div class="app-info">
+          <div class="app-name-row">
+            <span class="app-name">${app.name}</span>
+            <span class="app-badge ${badgeCls}">${app.category||"未分类"}</span>
+            ${app.status==="live"?`<span class="app-badge" style="background:#ecfdf5;color:#059669">LIVE</span>`:""}
+          </div>
+          <div class="app-desc">${app.desc||""}</div>
+          ${tags}
+          <span class="app-url">${urlDisplay}</span>
+        </div>
+        <button class="btn-del" onclick="deleteApp(${i})">删除</button>
+      </div>`;
+    }).join("")}`;
 }
 
 function renderSettings() {
