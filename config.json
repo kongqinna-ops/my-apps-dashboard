@@ -1,7 +1,7 @@
 {
   "version": 2,
   "settings": {
-    "publicMode": true,
+    "publicMode": false,
     "passwordHash": ""
   },
   "admin": {
