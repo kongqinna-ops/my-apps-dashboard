@@ -79,8 +79,8 @@
     },
     {
       "name": "渡字play跨设备文字接力",
-      "desc": "跨设备文字同步跨设备文字同步",
-      "color": "#4f46e5",
+      "desc": "同步文字，给每一次灵感接力",
+      "color": "#8a4ce6",
       "path": "https://duzhiplay.netlify.app/",
       "category": "工具",
       "tags": [],
