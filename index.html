@@ -256,6 +256,7 @@
     <div style="font-size:18px;font-weight:700;margin-bottom:6px">🔒 需要密码</div>
     <div id="appPwModalDesc" style="font-size:13px;color:#6b7280;margin-bottom:20px">此应用已加密，请输入访问密码</div>
     <div id="appPwError" style="background:#fef2f2;color:#dc2626;font-size:12.5px;padding:8px 12px;border-radius:8px;margin-bottom:14px;display:none">密码错误</div>
+    <div style="font-size:11.5px;color:#9ca3af;margin-bottom:12px">🔑 验证通过后将直接打开应用</div>
     <input type="password" id="appPwInput" placeholder="输入应用访问密码" onkeydown="if(event.key==='Enter')verifyAppPassword()" style="width:100%;height:44px;border:1px solid #e5e7eb;border-radius:10px;padding:0 14px;font-size:14px;outline:none;font-family:inherit;margin-bottom:8px" />
     <button onclick="verifyAppPassword()" style="width:100%;height:42px;border-radius:10px;border:none;background:#4f46e5;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">确认打开</button>
   </div>
@@ -314,7 +315,7 @@ async function sha256(text) {
 // ============================================================
 async function loadConfig() {
   try {
-    const res = await fetch("config.json?t=" + Date.now());
+    const res = await fetch("config.json?t=" + Date.now() + "&v=2");
     if (!res.ok) return;
     const data = await res.json();
     if (data.apps) APPS = data.apps;
@@ -491,14 +492,19 @@ function verifyAppPassword() {
   if (pendingAppIndex < 0) return;
   const input = document.getElementById("appPwInput").value;
   const app = APPS[pendingAppIndex];
+
   sha256(input).then(hash => {
     if (hash === app.appPasswordHash) {
       closeAppPwModal();
-      window.open(app.path, "_blank", "noopener");
+      window.location.href = app.path;
     } else {
       document.getElementById("appPwError").style.display = "block";
+      document.getElementById("appPwError").textContent = "密码错误，请重试";
       document.getElementById("appPwInput").value = "";
     }
+  }).catch(() => {
+    document.getElementById("appPwError").textContent = "验证失败，请重试";
+    document.getElementById("appPwError").style.display = "block";
   });
 }
 
