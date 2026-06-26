@@ -628,7 +628,11 @@ async function fetchConfig() {
   if (!res.ok) throw new Error(`GitHub API 错误 (${res.status})`);
   const data = await res.json();
   configSha = data.sha;
-  const content = atob(data.content.replace(/\n/g, ""));
+  // Properly decode base64 → bytes → UTF-8 (fixes Chinese garble from atob)
+  const binary = atob(data.content.replace(/\n/g, ""));
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  const content = new TextDecoder("utf-8").decode(bytes);
   configData = JSON.parse(content);
   return configData;
 }
