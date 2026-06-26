@@ -633,20 +633,13 @@ async function fetchConfig() {
   return configData;
 }
 
-// Safe JSON: escape ALL non-ASCII as \\uXXXX (prevents encoding issues on any server)
-function safeJsonStringify(obj, indent) {
-  return JSON.stringify(obj, (k, v) => {
-    if (typeof v === 'string') {
-      return v.replace(/[^\x20-\x7E]/g, ch =>
-        '\\u' + ch.charCodeAt(0).toString(16).padStart(4, '0')
-      );
-    }
-    return v;
-  }, indent);
-}
-
-async function saveConfig(message = "更新配置") {
-  const content = btoa(unescape(encodeURIComponent(safeJsonStringify(configData, 2))));
+// Save config: use native UTF-8 encoding via TextEncoder + base64 (no more double-escape issues)
+async function saveConfig(message = "\u66f4\u65b0\u914d\u7f6e") {
+  const jsonStr = JSON.stringify(configData, null, 2);
+  const bytes = new TextEncoder().encode(jsonStr);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+  const content = btoa(binary);
   const res = await fetch(API_BASE, {
     method: "PUT",
     headers: {
