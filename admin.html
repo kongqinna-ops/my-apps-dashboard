@@ -544,6 +544,28 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
   </div>
 </div>
 
+<!-- Edit App Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-title">修改应用</div>
+    <div class="modal-desc" id="editModalDesc">编辑应用信息</div>
+    <div class="modal-field"><label>应用名称 *</label><input type="text" id="editAppName" placeholder="应用名称" /></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="modal-field"><label>链接 *</label><input type="text" id="editAppPath" placeholder="https://..." /></div>
+      <div class="modal-field"><label>分类</label><input type="text" id="editAppCategory" placeholder="工具" /></div>
+    </div>
+    <div class="modal-field"><label>描述</label><input type="text" id="editAppDesc" placeholder="一句话描述" /></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="modal-field"><label>标签（逗号分隔）</label><input type="text" id="editAppTags" placeholder="标签1, 标签2" /></div>
+      <div class="modal-field"><label>图标颜色</label><input type="color" id="editAppColor" value="#4f46e5" style="height:36px;border-radius:8px;padding:2px 4px;width:100%;cursor:pointer" /></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeEditModal()">取消</button>
+      <button class="btn-confirm" onclick="saveEditApp()">保存修改</button>
+    </div>
+  </div>
+</div>
+
 
 <script>
 // ============================================================
@@ -800,6 +822,9 @@ function renderAppList() {
         </div>
       </div>
       <div class="app-actions">
+        <button class="btn-icon" title="修改" onclick="openEditModal(${i})">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="none"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="none"/></svg>
+        </button>
         <button class="btn-icon ${hasPw?'lock-on':''}" title="${hasPw?'已设密码':'未加密'}" onclick="openPwModal(${i})">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             ${hasPw
@@ -935,6 +960,67 @@ document.getElementById("pwModal").addEventListener("click", function(e) {
 document.addEventListener("keydown", e => {
   if (e.key === "Escape" && document.getElementById("pwModal").classList.contains("show")) {
     closePwModal();
+  }
+});
+
+// ============================================================
+//  Edit App Modal
+// ============================================================
+function openEditModal(index) {
+  editingAppIndex = index;
+  const app = configData.apps[index];
+  document.getElementById("editModalDesc").textContent = `编辑「${escHTML(app.name)}」的信息`;
+  document.getElementById("editAppName").value = app.name || "";
+  document.getElementById("editAppPath").value = app.path || "";
+  document.getElementById("editAppCategory").value = app.category || "";
+  document.getElementById("editAppDesc").value = app.desc || "";
+  document.getElementById("editAppTags").value = (app.tags||[]).join(", ");
+  document.getElementById("editAppColor").value = app.color || "#4f46e5";
+  document.getElementById("editModal").classList.add("show");
+  setTimeout(() => document.getElementById("editAppName").focus(), 100);
+}
+
+function closeEditModal() {
+  document.getElementById("editModal").classList.remove("show");
+  editingAppIndex = -1;
+}
+
+async function saveEditApp() {
+  const name = document.getElementById("editAppName").value.trim();
+  const path = document.getElementById("editAppPath").value.trim();
+  const category = document.getElementById("editAppCategory").value.trim() || "工具";
+  const desc = document.getElementById("editAppDesc").value.trim();
+  const tagsStr = document.getElementById("editAppTags").value.trim();
+  const tags = tagsStr ? tagsStr.split(",").map(t=>t.trim()).filter(Boolean) : [];
+  const color = document.getElementById("editAppColor").value || "#4f46e5";
+
+  if (!name || !path) { showToast("请填写应用名称和链接", "error"); return; }
+
+  showLoading(true);
+  try {
+    await fetchConfig();
+    const app = configData.apps[editingAppIndex];
+    app.name = name;
+    app.path = path;
+    app.category = category;
+    app.desc = desc;
+    app.tags = tags;
+    app.color = color;
+
+    await saveConfig("修改应用: " + name);
+    showToast("修改成功", "success");
+    closeEditModal();
+    renderAppList();
+  } catch (e) { showToast("保存失败: " + e.message, "error"); }
+  finally { showLoading(false); }
+}
+
+document.getElementById("editModal").addEventListener("click", function(e) {
+  if (e.target === this) closeEditModal();
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && document.getElementById("editModal").classList.contains("show")) {
+    closeEditModal();
   }
 });
 
