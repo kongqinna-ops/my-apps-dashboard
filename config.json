@@ -78,8 +78,8 @@
       "appPasswordHash": ""
     },
     {
-      "name": "渡字play",
-      "desc": "跨设备文字同步",
+      "name": "渡字play跨设备文字接力",
+      "desc": "跨设备文字同步跨设备文字同步",
       "color": "#4f46e5",
       "path": "https://duzhiplay.netlify.app/",
       "category": "工具",
