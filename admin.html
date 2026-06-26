@@ -415,7 +415,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
           <div><label class="form-label">分类</label><input class="form-input" id="appCategory" placeholder="工具" /></div>
           <div><label class="form-label">图标颜色</label><input class="form-input" id="appColor" type="color" value="#4f46e5" /></div>
           <div class="full"><label class="form-label">描述</label><input class="form-input" id="appDesc" placeholder="一句话描述这个应用" /></div>
-          <div class="full"><label class="form-label">标签（逗号分隔）</label><input class="form-input" id="appTags" placeholder="标签1, 标签2" /></div>
+          <div class="full"><label class="form-label">标签（逗号或顿号分隔）</label><input class="form-input" id="appTags" placeholder="标签1, 标签2" /></div>
           <div class="full"><label class="form-label">访问密码（留空表示无需密码即可打开）</label><input class="form-input" id="appPassword" type="password" placeholder="设置后打开此应用需要输入密码" /></div>
           <div class="full">
             <button class="btn-primary" id="addAppBtn" onclick="addApp()" style="width:auto;padding:0 24px">添加应用</button>
@@ -556,7 +556,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
     </div>
     <div class="modal-field"><label>描述</label><input type="text" id="editAppDesc" placeholder="一句话描述" /></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div class="modal-field"><label>标签（逗号分隔）</label><input type="text" id="editAppTags" placeholder="标签1, 标签2" /></div>
+      <div class="modal-field"><label>标签（逗号或顿号分隔）</label><input type="text" id="editAppTags" placeholder="标签1, 标签2" /></div>
       <div class="modal-field"><label>图标颜色</label><input type="color" id="editAppColor" value="#4f46e5" style="height:36px;border-radius:8px;padding:2px 4px;width:100%;cursor:pointer" /></div>
     </div>
     <div class="modal-actions">
@@ -862,7 +862,7 @@ async function addApp() {
   const color = document.getElementById("appColor").value || "#4f46e5";
   const desc = document.getElementById("appDesc").value.trim() || "";
   const tagsStr = document.getElementById("appTags").value.trim();
-  const tags = tagsStr ? tagsStr.split(",").map(t=>t.trim()).filter(Boolean) : [];
+  const tags = tagsStr ? tagsStr.split(/[,，、]/).map(t=>t.trim()).filter(Boolean) : [];
   const appPw = document.getElementById("appPassword").value || "";
 
   if (!name || !path) { showToast("请填写应用名称和链接", "error"); return; }
@@ -991,7 +991,7 @@ async function saveEditApp() {
   const category = document.getElementById("editAppCategory").value.trim() || "工具";
   const desc = document.getElementById("editAppDesc").value.trim();
   const tagsStr = document.getElementById("editAppTags").value.trim();
-  const tags = tagsStr ? tagsStr.split(",").map(t=>t.trim()).filter(Boolean) : [];
+  const tags = tagsStr ? tagsStr.split(/[,，、]/).map(t=>t.trim()).filter(Boolean) : [];
   const color = document.getElementById("editAppColor").value || "#4f46e5";
 
   if (!name || !path) { showToast("请填写应用名称和链接", "error"); return; }
