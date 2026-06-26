@@ -452,11 +452,12 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 
         <div class="info-row">
           <div style="flex:1">
-            <div class="info-label">修改用户名</div>
-            <div class="pw-fields" style="margin-top:6px">
-              <input class="pw-field-input" id="newAdminUser" placeholder="新的用户名" />
-              <input class="pw-field-input" id="newAdminPass" type="password" placeholder="新密码（必填以验证身份）" />
-              <input class="pw-field-input" id="confirmAdminPass" type="password" placeholder="确认密码" />
+            <div class="info-label">修改用户名或密码</div>
+            <div class="pw-fields" style="margin-top:6px;flex-wrap:wrap;gap:8px">
+              <input class="pw-field-input" id="newAdminUser" placeholder="新用户名（可不填）" />
+              <input class="pw-field-input" id="oldAdminPass" type="password" placeholder="当前密码（必填）" style="min-width:140px" />
+              <input class="pw-field-input" id="newAdminPass" type="password" placeholder="新密码（可不填）" style="min-width:120px" />
+              <input class="pw-field-input" id="confirmAdminPass" type="password" placeholder="确认新密码" style="min-width:120px" />
               <button class="btn-save-sm" onclick="updateAdminAccount()">保存修改</button>
             </div>
           </div>
@@ -945,34 +946,34 @@ document.addEventListener("keydown", e => {
 // ============================================================
 async function updateAdminAccount() {
   const newUser = document.getElementById("newAdminUser").value.trim();
+  const oldPass = document.getElementById("oldAdminPass").value;
   const newPass = document.getElementById("newAdminPass").value;
   const confirmPass = document.getElementById("confirmAdminPass").value;
 
-  if (!newUser && !newPass) { showToast("请填写要修改的内容", "error"); return; }
-  if ((newUser || newPass) && !newPass) {
-    showToast("修改任何信息都需要同时填写当前密码进行验证", "error"); return;
-  }
-  if (newPass && newPass.length < 6) { showToast("密码至少 6 位", "error"); return; }
-  if (newPass && newPass !== confirmPass) { showToast("两次密码不一致", "error"); return; }
+  if (!oldPass) { showToast("\u8bf7\u586b\u5199\u5f53\u524d\u5bc6\u7801\u8fdb\u884c\u8eab\u4efd\u9a8c\u8bc1", "error"); return; }
+  if (!newUser && !newPass) { showToast("\u8bf7\u586b\u5199\u8981\u4fee\u6539\u7684\u5185\u5bb9\uff08\u65b0\u7528\u6237\u540d\u6216\u65b0\u5bc6\u7801\uff09", "error"); return; }
+  if (newPass && newPass.length < 6) { showToast("\u65b0\u5bc6\u7801\u81f3\u5c11 6 \u4f4d", "error"); return; }
+  if (newPass && newPass !== confirmPass) { showToast("\u4e24\u6b21\u65b0\u5bc6\u7801\u4e0d\u4e00\u81f4", "error"); return; }
 
   showLoading(true);
   try {
     await fetchConfig();
 
-    // Verify current password first
-    const currentHash = await sha256(newPass);
-    if (currentHash !== configData.admin.passwordHash) {
-      showToast("当前密码不正确", "error"); return;
+    // Verify with current/old password
+    const oldHash = await sha256(oldPass);
+    if (oldHash !== configData.admin.passwordHash) {
+      showToast("\u5f53\u524d\u5bc6\u7801\u4e0d\u6b63\u786e", "error"); showLoading(false); return;
     }
 
+    // Apply changes
     if (newUser) configData.admin.username = newUser;
-    // If they want to change to a NEW password, we'd need a separate field.
-    // For now, this flow verifies identity with current password and allows changing username.
+    if (newPass) configData.admin.passwordHash = await sha256(newPass);
 
-    await saveConfig("更新管理员信息");
-    showToast("管理员信息已更新", "success");
+    await saveConfig("\u66f4\u65b0\u7ba1\u7406\u5458\u4fe1\u606f");
+    showToast("\u7ba1\u7406\u5458\u4fe1\u606f\u5df2\u66f4\u65b0", "success");
 
     document.getElementById("newAdminUser").value = "";
+    document.getElementById("oldAdminPass").value = "";
     document.getElementById("newAdminPass").value = "";
     document.getElementById("confirmAdminPass").value = "";
 
