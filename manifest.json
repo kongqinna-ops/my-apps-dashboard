@@ -1,6 +1,6 @@
 {
-  "name": "应用控制台",
-  "short_name": "应用控制台",
+  "name": "Enna Skills",
+  "short_name": "Enna Skills",
   "description": "我的应用仪表盘",
   "start_url": "/",
   "display": "standalone",

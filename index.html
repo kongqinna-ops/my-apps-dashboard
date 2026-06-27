@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>应用控制台</title>
+  <title>Enna Skills</title>
   <!-- PWA & Icon -->
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#7c3aed">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="应用控制台">
+  <meta name="apple-mobile-web-app-title" content="Enna Skills">
   <link rel="apple-touch-icon" href="/icons/icon-180x180.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
@@ -200,15 +200,10 @@
 
 <!-- Top Nav -->
 <nav class="topnav">
-  <a class="tn-logo"><span class="tn-logo-mark">A</span> 应用控制台</a>
+  <span style="font-size:17px;font-weight:700;color:var(--text);letter-spacing:-.3px;flex-shrink:0">Enna Skills</span>
   <div class="tn-divider"></div>
   <button class="tn-team"><span class="tn-team-dot"></span> kongq</button>
-  <button class="tn-scope">📱 所有应用</button>
   <div class="tn-spacer"></div>
-  <div class="tn-right">
-    <a class="tn-link" href="admin.html">⚙️ 管理</a>
-    <div class="tn-avatar">K</div>
-  </div>
 </nav>
 
 <!-- Password Gate -->
@@ -274,7 +269,8 @@ const FALLBACK_APPS = [
     path: "https://thunderous-dodol-05fb2f.netlify.app/",
     category: "旅行",
     tags: ["青海", "甘肃", "攻略"],
-    status: "live"
+    status: "live",
+    appPasswordHash: "ed053874ca199cc53e11c9f4aeaeccd07da652d1c19e3cbdbad5fd9fadba2532"
   },
   {
     name: "Markdown 排版编辑器",
@@ -283,7 +279,8 @@ const FALLBACK_APPS = [
     path: "https://imaginative-tartufo-d12aa2.netlify.app/",
     category: "工具",
     tags: ["Markdown", "编辑器"],
-    status: "live"
+    status: "live",
+    appPasswordHash: ""
   },
   {
     name: "One Step 待办任务管理",
@@ -292,7 +289,38 @@ const FALLBACK_APPS = [
     path: "https://profound-figolla-a17913.netlify.app/",
     category: "效率工具",
     tags: ["任务", "待办"],
-    status: "live"
+    status: "live",
+    appPasswordHash: ""
+  },
+  {
+    name: "新媒体热点抓取与创作工作流",
+    desc: "实时抓取新媒体热点，辅助内容创作工作流",
+    color: "#8b5cf6",
+    path: "https://hotspot-report-20260623.netlify.app/",
+    category: "媒体",
+    tags: ["新媒体", "热点", "创作"],
+    status: "live",
+    appPasswordHash: "ed053874ca199cc53e11c9f4aeaeccd07da652d1c19e3cbdbad5fd9fadba2532"
+  },
+  {
+    name: "新媒体渠道数据分析",
+    desc: "新媒体渠道数据分析，可视化展示各平台数据表现",
+    color: "#f59e0b",
+    path: "https://monumental-mooncake-b03164.netlify.app/",
+    category: "媒体",
+    tags: ["新媒体", "数据分析", "报告"],
+    status: "live",
+    appPasswordHash: "ed053874ca199cc53e11c9f4aeaeccd07da652d1c19e3cbdbad5fd9fadba2532"
+  },
+  {
+    name: "渡字play跨设备文字接力",
+    desc: "同步文字，给每一次灵感接力",
+    color: "#7832e2",
+    path: "https://duzhiplay.netlify.app/",
+    category: "工具",
+    tags: ["文字", "多设备", "同步"],
+    status: "live",
+    appPasswordHash: ""
   },
 ];
 
@@ -429,8 +457,6 @@ function render(){
   }
 
   grid.innerHTML=filtered.map((app, i)=>{
-    let url=app.path;
-    try{ url=new URL(app.path).hostname; }catch(e){}
     const hasPw = app.appPasswordHash && app.appPasswordHash.length > 0;
     const lockBadge = hasPw ? '<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;background:#fff7ed;color:#ea580c;margin-left:6px">🔒 加密</span>' : "";
     // For password-protected apps, use onclick instead of href
@@ -448,7 +474,6 @@ function render(){
           </div>
         </div>
         <div class="card-foot">
-          <span class="card-url">${url}</span>
           <span class="card-go">需密码 ↗</span>
         </div>
       </div>`;
@@ -466,7 +491,6 @@ function render(){
         </div>
       </div>
       <div class="card-foot">
-        <span class="card-url">${url}</span>
         <span class="card-go">打开 ↗</span>
       </div>
     </a>`}).join("");
